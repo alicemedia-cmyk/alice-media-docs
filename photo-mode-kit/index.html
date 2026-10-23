@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Photo Mode Kit documentation | Alice Media</title><link rel="stylesheet" href="../style.css"></head>
+<body><header><div class="in"><a class="brand" href="../index.html">Alice Media docs</a></div></header>
+<main><h1>Photo Mode Kit</h1>
+<p class="lead">A complete photo mode in one component: freeze the game, fly a cinema camera, add depth of field, filters and lights, and save photos in exact Steam, YouTube and TikTok formats.</p>
+<img class="cover" src="../img/photo-mode-kit.jpg" alt="Photo Mode Kit">
+<div class="links"><a href="https://github.com/alicemedia-cmyk/alice-media-docs/issues">Support</a></div>
+<nav class="toc"><a href="#quick-start-unreal-engine">Quick start (Unreal Engine)</a> <a href="#changelog">Changelog</a> <a href="#third-party-content">Third-party content</a></nav>
+<h2 id="quick-start-unreal-engine">Quick start (Unreal Engine)</h2>
+<h3 id="unreal-engine-56-57-58">Unreal Engine 5.6, 5.7, 5.8</h3>
+<ol>
+<li>Copy <code>PhotoModeKit</code> into <code>&lt;YourProject&gt;/Plugins/</code>. Restart the editor.</li>
+<li>Open your PlayerController Blueprint and add the <strong>Photo Mode</strong> component.</li>
+<li>Play and press <strong>P</strong> (or the gamepad View button).</li>
+</ol>
+<p>That's all: no input actions, no widgets. Optionally, bind <strong>On Photo Mode Changed</strong> to hide your HUD.</p>
+<h3 id="unity-6-urp">Unity 6 (URP)</h3>
+<ol>
+<li>Add the package: <strong>Package Manager &gt; + &gt; Add package from disk</strong>, then pick <code>com.alicemedia.photomode/package.json</code>.</li>
+<li>Add <strong>Photo Mode</strong> (Add Component &gt; Photo Mode &gt; Photo Mode) to any GameObject in the scene.</li>
+<li>Drag your player into <strong>Player</strong> to get the range limit and Hide Player. Play and press <strong>P</strong>.</li>
+</ol>
+<p>It works with the Input System package and with the legacy Input Manager.</p>
+<p><strong>Demo scene:</strong> Package Manager &gt; Photo Mode Kit &gt; Samples &gt; <strong>Cove Demo</strong> &gt; Import, then open <code>Scenes/PhotoModeKit_Cove_Day</code> (or <code>_Night</code>), press Play, fly with WASD and the right mouse button, press <strong>P</strong>.</p>
+<h3 id="controls">Controls</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Keyboard and mouse</th>
+<th>Gamepad</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Move</td>
+<td>WASD, Q/E down/up, Shift faster, Ctrl slower</td>
+<td>Left stick, triggers down/up</td>
+</tr>
+<tr>
+<td>Look</td>
+<td>Hold right mouse button</td>
+<td>Right stick</td>
+</tr>
+<tr>
+<td>Roll</td>
+<td>Z / C</td>
+<td>Bumpers</td>
+</tr>
+<tr>
+<td>Zoom</td>
+<td>Mouse wheel</td>
+<td>D-pad up/down</td>
+</tr>
+<tr>
+<td>Focus</td>
+<td>Click anything in the frame</td>
+<td>Auto focus</td>
+</tr>
+<tr>
+<td>Take photo</td>
+<td>Enter</td>
+<td>A</td>
+</tr>
+<tr>
+<td>Hide UI</td>
+<td>H</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>Surprise me</td>
+<td>T</td>
+<td>X</td>
+</tr>
+<tr>
+<td>Guides</td>
+<td>G</td>
+<td></td>
+</tr>
+<tr>
+<td>Undo / redo</td>
+<td>Ctrl+Z / Ctrl+Y</td>
+<td></td>
+</tr>
+<tr>
+<td>Exit</td>
+<td>Esc, P</td>
+<td>B, View</td>
+</tr>
+</tbody>
+</table>
+<h3 id="formats">Formats</h3>
+<p><strong>Frame &gt; Format</strong> crops the photo and shows the format's safe zones:
+- Screen (the screen as it is);
+- ratios: 16:9, 21:9, 3:2, 4:3, 1:1, 4:5, 2:3, 9:16;
+- Steam capsules and the library hero, the store page background and screenshots;
+- Fab, Unity Asset Store, Epic and itch images;
+- YouTube thumbnails, Shorts / TikTok / Reels covers, Instagram, X;
+- a 4K wallpaper.</p>
+<p>Exact formats are saved at their exact pixel size. The game renders larger when the crop would otherwise be blurry.</p>
+<p>Hide the store formats from players with <strong>Show Store Formats</strong> (Project Settings &gt; Plugins &gt; Photo Mode Kit in Unreal, or the component in Unity).</p>
+<h3 id="shot-files">Shot files</h3>
+<p>Every photo gets a <code>.json</code> next to it with the camera and every setting. <strong>Gallery &gt; Recreate</strong> (or <strong>Load Shot</strong>) flies the camera back and restores the look, so you can re-render a capsule after an art pass.</p>
+<h3 id="console-unreal">Console (Unreal)</h3>
+<p>For capsule batches and automated screenshots. No component needed: the commands add one to the first player controller.
+- <code>PhotoMode.Enter</code> / <code>PhotoMode.Exit</code>
+- <code>PhotoMode.Load &lt;shot .json or photo&gt;</code>: opens photo mode with that camera and look.
+- <code>PhotoMode.Set &lt;key&gt; &lt;value&gt;</code>: changes one setting by its shot file key, for example <code>PhotoMode.Set color.filter noir</code>, <code>PhotoMode.Set frame.format steam-header</code>, <code>PhotoMode.Set lens.aperture 2.8</code>. In Blueprint: <strong>Set Photo Setting</strong>.
+- <code>PhotoMode.Tab &lt;0-6&gt;</code>: shows a panel tab (Camera, Lens, Color, Effects, Frame, Lights, Gallery).
+- <code>PhotoMode.Take</code>: takes a photo (opens photo mode first).</p>
+<h3 id="demo-map-unreal">Demo map (Unreal)</h3>
+<p><code>/PhotoModeKit/Demo/Maps/L_PMK_Cove_Day</code> and <code>L_PMK_Cove_Night</code> (turn on <strong>Show Plugin Content</strong> in the Content Browser). Play, fly with WASD and the mouse, press <strong>P</strong>. The maps use <strong>Photo Mode Demo Game Mode</strong> in World Settings; your own maps are not affected.</p>
+<h3 id="poses">Poses</h3>
+<ul>
+<li>Unreal: implement <code>Photo Mode Posable</code> on the pawn (Get Photo Poses, Apply Photo Pose).</li>
+<li>Unity: implement <code>IPhotoModePosable</code> on a component of the player.</li>
+</ul>
+<h3 id="notes">Notes</h3>
+<ul>
+<li><strong>Unreal:</strong> the world is frozen with time dilation, so the camera keeps updating. Photos are captured from the real renderer (Lumen, TSR) without UI, cropped and resized on a worker thread.</li>
+<li><strong>Unreal input after closing:</strong> <strong>Exit Input Mode</strong> in Project Settings &gt; Plugins &gt; Photo Mode Kit. Game Only by default; pick Game and UI for games with a mouse cursor or menus, or Leave Unchanged and set your own mode in <strong>On Photo Mode Changed</strong>.</li>
+<li><strong>Unity:</strong> the game is paused with <code>Time.timeScale = 0</code>. Photos are rendered from the photo camera at the output size, with post-processing through a runtime URP Volume.</li>
+</ul>
+<h2 id="changelog">Changelog</h2>
+<h3 id="101">1.0.1</h3>
+<ul>
+<li>Supports Unreal Engine 5.6, 5.7 and 5.8.</li>
+<li>The panel shows values to the precision of each slider (field of view 65.7 instead of 65.699997).</li>
+</ul>
+<h3 id="100-first-release-unreal-engine-58-and-unity-6-urp">1.0.0 (first release, Unreal Engine 5.8 and Unity 6 URP)</h3>
+<ul>
+<li><strong>Camera:</strong></li>
+<li>free cinema camera with collision and a range limit around the player;</li>
+<li>roll, FOV and focal length;</li>
+<li>depth of field with click-to-focus.</li>
+<li><strong>Look:</strong></li>
+<li>15 procedural filters;</li>
+<li>exposure, contrast, saturation, white balance, tint, vignette, grain, chromatic aberration, bloom;</li>
+<li>three placeable lights with color temperature.</li>
+<li><strong>Composition:</strong> thirds, golden ratio, golden spiral, center and diagonal guides.</li>
+<li><strong>Output formats</strong> with exact sizes and safe zones:</li>
+<li>Steam capsules and store images;</li>
+<li>YouTube, Shorts, TikTok, Instagram;</li>
+<li>free ratios.</li>
+</ul>
+<p>Photos are rendered larger when needed, then cropped and resized.
+- <strong>Photos:</strong>
+  - PNG or JPG;
+  - a shot file next to each photo recreates the camera and the look.
+- <strong>Gallery</strong> with favorites and delete.
+- <strong>Editing:</strong> undo and redo; Surprise Me looks; poses through an interface.
+- <strong>Interface:</strong>
+  - built-in panel with keyboard, mouse and gamepad;
+  - no input assets or widgets to set up (Unity: Input System or the legacy Input Manager).
+- <strong>Unreal:</strong>
+  - one component on the PlayerController; world frozen with time dilation;
+  - Exit Input Mode setting (Game Only, Game and UI, Leave Unchanged);
+  - Set Photo Setting (Blueprint) and console commands <code>PhotoMode.Enter</code>, <code>Exit</code>, <code>Load</code>, <code>Set</code>, <code>Tab</code>, <code>Take</code> for scripted shots;
+  - demo maps: a stylized cove by day and by night with a robot to photograph.
+- <strong>Unity:</strong> one component; game paused with <code>Time.timeScale</code>; post-processing through a runtime URP Volume.</p>
+<h2 id="third-party-content">Third-party content</h2>
+<p>None. All code, the 15 filters (lookup tables generated procedurally in code), the interface theme and the icon are original work by Alice Media. The Unreal plugin uses only engine modules; the Unity package uses only Unity packages (URP, optionally the Input System).</p>
+<p>No AI-generated content (images, sounds, voice) is included in the product.</p>
+<h2 id="support">Support</h2>
+<p>Questions, bugs and ideas: <a href="https://github.com/alicemedia-cmyk/alice-media-docs/issues">https://github.com/alicemedia-cmyk/alice-media-docs/issues</a>. Please include your engine version and the Photo Mode Kit version (1.0.1).</p>
+</main>
+<footer>&copy; 2026 Alice Media. Support: <a href="https://github.com/alicemedia-cmyk/alice-media-docs/issues">https://github.com/alicemedia-cmyk/alice-media-docs/issues</a></footer>
+</body></html>
