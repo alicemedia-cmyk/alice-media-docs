@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stylized Water Kit documentation | Alice Media</title><link rel="stylesheet" href="../style.css"></head>
+<body><header><div class="in"><a class="brand" href="../index.html">Alice Media docs</a></div></header>
+<main><h1>Stylized Water Kit</h1>
+<p class="lead">Stylized water that looks good out of the box: 24 presets from anime lakes to PSX retro, toon foam, caustics and waves that objects really float on. One draw call, no project setup.</p>
+<img class="cover" src="../img/stylized-water-kit.jpg" alt="Stylized Water Kit">
+<div class="links"><a href="https://github.com/alicemedia-cmyk/alice-media-docs/issues">Support</a></div>
+<nav class="toc"><a href="#quick-start-unreal-engine">Quick start (Unreal Engine)</a> <a href="#changelog">Changelog</a> <a href="#third-party-content">Third-party content</a></nav>
+<h2 id="quick-start-unreal-engine">Quick start (Unreal Engine)</h2>
+<h3 id="unreal-engine-56-57-58">Unreal Engine 5.6, 5.7, 5.8</h3>
+<ol>
+<li>Copy <code>StylizedWaterKit</code> into <code>&lt;YourProject&gt;/Plugins/</code> and restart the editor. The plugin enables Procedural Mesh Component.</li>
+<li>Drag <strong>Stylized Water Body</strong> into the level. It shows the <code>MI_SWK_ToonBands</code> preset right away; set <strong>Size</strong>.</li>
+<li>Pick another look: set <strong>Material</strong> to any of the 24 presets in <strong>Plugins &gt; Stylized Water Kit Content &gt; Presets</strong> (<code>MI_SWK_TropicalLagoon</code>, <code>MI_SWK_PSXRetro</code>...). To make your own, duplicate a preset and edit its parameters.</li>
+<li>For floating objects: drag <strong>Stylized Water Floating Actor</strong> into the level and pick its mesh (it needs simple
+   collision). Or give your own actor a physics-simulating root and add <strong>Water Buoyancy</strong>.</li>
+<li>The water follows the level's sun: the <strong>Sun</strong> property, else the atmosphere sun light, else the brightest directional
+   light. A <strong>Sky Light</strong> adds the sky colour and reflections.</li>
+</ol>
+<p>Blueprint: <strong>Set Water Material</strong> (switch presets at runtime), <strong>Get Water Height At</strong>, <strong>Get Water Normal At</strong>,
+<strong>Is Underwater</strong>, <strong>Find Water Body</strong>.</p>
+<p>Demo: <strong>Plugins &gt; Stylized Water Kit Content &gt; Demo &gt; Maps</strong>: <code>L_SWK_Cove_Day</code> and <code>L_SWK_Cove_Night</code>, a stylized island
+cove with a pier, a boat and floating props. Console: <code>SWK.Preset TropicalLagoon</code> (or any preset name) switches every water
+body; <code>SWK.DebugView 1..5</code> shows sun light, depth, opacity, sky ambient and sky reflection.</p>
+<p>The master material is <code>M_SWK_Water</code> (plugin content). Its shading code is in the plugin's <code>Shaders/Private/SWK_Water.ush</code>.</p>
+<h3 id="unity-6-urp">Unity 6 (URP)</h3>
+<ol>
+<li><strong>Package Manager &gt; + &gt; Add package from disk</strong>, then pick <code>com.alicemedia.stylizedwater/package.json</code>.</li>
+<li>Nothing to set in the URP asset: the water asks URP for the depth and opaque textures it needs by itself.</li>
+<li>Add <strong>Stylized Water &gt; Water Body</strong> to an empty GameObject. It uses the package's default material; set a preset id (for example <code>tropical-lagoon</code>) and the size.</li>
+<li>For your own material: create one with the shader <strong>Alice Media/Stylized Water</strong> and assign it to <strong>Material</strong>.</li>
+<li>For floating objects: add <strong>Water Buoyancy</strong> next to a Rigidbody.</li>
+</ol>
+<h3 id="presets">Presets</h3>
+<p>toon-bands, anime-lake, tropical-lagoon, mountain-lake, pond, river, ocean-calm, ocean-storm, swamp, arctic, toxic, lava, bioluminescent, psx-retro, pixel, painterly, ink, candy, deep-abyss, shallow-reef, oil, mud, ice-melt, blood-moon. They are defined once in <code>presets.json</code> (meters, sRGB colors) and used by both engines.</p>
+<h3 id="performance">Performance</h3>
+<p>Each water body costs:
+- one mesh with one material, so one draw call;
+- no tessellation, no render targets, no extra passes.</p>
+<p>Waves are four Gerstner waves in the vertex shader. Resolution sets the vertex count (96 × 96 cells by default), so lower it for small ponds.</p>
+<h3 id="uefn-planned">UEFN (planned)</h3>
+<p>UEFN has no Custom HLSL node, so the UEFN version will be a node-only material with the same parameters and presets. Buoyancy is not included (Verse cannot read the material waves). It will be built and tested in UEFN, which is not installed yet.</p>
+<h2 id="changelog">Changelog</h2>
+<h3 id="unity-101">Unity 1.0.1</h3>
+<p>Fixed:
+- With a URP renderer whose Depth Texture Mode is After Transparents (or with the depth texture off), the water got no scene depth and rendered as deep water everywhere, without shallows or shore foam. The water now asks URP for the depth and opaque textures itself, so no URP asset setting is needed.</p>
+<h3 id="100-first-release-unreal-engine-56-57-58-and-unity-6-urp">1.0.0 (first release, Unreal Engine 5.6, 5.7, 5.8 and Unity 6 URP)</h3>
+<ul>
+<li><strong>One shading core for both engines</strong> (<code>SWK_Water.ush</code> / <code>.hlsl</code>), with:</li>
+<li>four Gerstner waves, detail ripples;</li>
+<li>depth-based color and clarity;</li>
+<li>shore foam, toon foam lines and crest foam;</li>
+<li>caustics, toon lighting with bands, specular and sparkles, fresnel;</li>
+<li>underwater fog that darkens with depth;</li>
+<li>posterize with dithering, vertex snapping and pixelation for retro looks.</li>
+<li><strong>24 presets</strong> shared by both engines, from Toon Bands and Tropical Lagoon to PSX Retro, Pixel, Ink, Lava and Blood Moon.</li>
+<li><strong>Water body:</strong></li>
+<li>a grid surface with one draw call;</li>
+<li>CPU wave queries that match the GPU: height, normal, is underwater, find the water body at a location.</li>
+<li><strong>Buoyancy:</strong> sample points that follow the waves, with drag; objects settle and bob.</li>
+<li><strong>No setup:</strong> a new water body shows water right away; no project settings, collision channels or engine Water plugin.</li>
+<li><strong>Unreal:</strong> master material and preset instances ship in the plugin content.</li>
+<li><strong>Unity:</strong> URP shader with depth, refraction and fog; the default material ships in the package.</li>
+<li><strong>Lighting from the level:</strong> the sun (or moon) colour and direction, the Sky Light from above and the sky reflected at
+  grazing angles; colours keep their look under any sun intensity and exposure.</li>
+<li><strong>Floating Actor:</strong> a drop-in physics mesh with buoyancy.</li>
+<li><strong>Emission Pattern:</strong> glow everywhere (lava) or only in foam, glints and caustics (bioluminescence).</li>
+<li><strong>Demo maps:</strong> a stylized island cove by day and by night.</li>
+<li><strong>Runtime:</strong> Set Water Material, console <code>SWK.Preset &lt;Name&gt;</code>, debug views <code>SWK.DebugView</code>.</li>
+</ul>
+<h2 id="third-party-content">Third-party content</h2>
+<p>None. All code, the shading core, the master material and its 24 presets (generated by our script from <code>presets.json</code>) the icon and the demo cove (meshes made procedurally in Blender by our script, flat-colour materials, procedural sky) are original work by Alice Media. The demo sky dome uses the engine's basic sphere mesh. No textures are used: every pattern is procedural. The Unreal plugin uses only engine modules and the engine's Procedural Mesh Component plugin; the Unity package uses only URP.</p>
+<p>No AI-generated content (images, sounds, voice) is included in the product.</p>
+<h2 id="support">Support</h2>
+<p>Questions, bugs and ideas: <a href="https://github.com/alicemedia-cmyk/alice-media-docs/issues">https://github.com/alicemedia-cmyk/alice-media-docs/issues</a>. Please include your engine version and the Stylized Water Kit version (1.0.0).</p>
+</main>
+<footer>&copy; 2026 Alice Media. Support: <a href="https://github.com/alicemedia-cmyk/alice-media-docs/issues">https://github.com/alicemedia-cmyk/alice-media-docs/issues</a></footer>
+</body></html>
