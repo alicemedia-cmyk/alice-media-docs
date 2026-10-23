@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Game Feel Kit documentation | Alice Media</title><link rel="stylesheet" href="../style.css"></head>
+<body><header><div class="in"><a class="brand" href="../index.html">Alice Media docs</a></div></header>
+<main><h1>Game Feel Kit</h1>
+<p class="lead">Make every hit, jump and pickup feel good: camera shake, hitstop, flashes, punches, vibration and damage numbers in 42 presets, played with one Blueprint node. With a mixer and accessibility settings.</p>
+<img class="cover" src="../img/game-feel-kit.jpg" alt="Game Feel Kit">
+<div class="links"><a href="https://github.com/alicemedia-cmyk/alice-media-docs/issues">Support</a></div>
+<nav class="toc"><a href="#quick-start-unreal-engine">Quick start (Unreal Engine)</a> <a href="#quick-start-unity">Quick start (Unity)</a> <a href="#changelog">Changelog</a> <a href="#third-party-content">Third-party content</a></nav>
+<h2 id="quick-start-unreal-engine">Quick start (Unreal Engine)</h2>
+<p>Game Feel Kit adds "juice" to any Unreal project: camera shake, hitstop, flashes, punches, vibration and floating numbers. Effects are bundled into presets and played with one node.</p>
+<p>Requirements: Unreal Engine 5.6, 5.7 or 5.8, Windows 64-bit.</p>
+<h3 id="1-play-a-built-in-preset">1. Play a built-in preset</h3>
+<p>In any Blueprint (for example, when an enemy takes damage):</p>
+<p><strong>Play Built In Feedback</strong>:
+- <strong>Preset</strong>: <code>Hit Heavy</code>
+- <strong>Target</strong>: the damaged actor
+- <strong>Intensity</strong>: 0..1 (a light hit 0.3, a heavy one 1)
+- <strong>Value</strong>: the damage, shown as a floating number</p>
+<p>That is all. The camera kicks, the game freezes for a few frames, the enemy flashes and recoils, and the number pops above its head.</p>
+<h3 id="demo-map-juice-lab">Demo map: Juice Lab</h3>
+<p><code>/GameFeelKit/Demo/Maps/L_GameFeelKit_JuiceLab</code> (turn on <strong>Show Plugin Content</strong> in the Content Browser). Press Play: the director plays all 42 presets on three dummies with each preset's name on screen.
+- <strong>Left / Right</strong> pick a preset, <strong>Space</strong> plays it, <strong>Up / Down</strong> pick a dummy, <strong>A</strong> toggles autoplay.
+- <strong>Tab</strong> opens the accessibility panel (the same settings your players get), <strong>R</strong> applies Reduce Motion.
+- Console: <code>GameFeelDemo.Play HitCritical</code>, <code>GameFeelDemo.Auto 0</code>, <code>GameFeelDemo.Panel 1</code>, <code>GameFeelDemo.Access ScreenFlash 0.3</code>, <code>GameFeelDemo.PlayWith HitHeavy 1 1 Hitstop.Duration=0.3</code>, <code>GameFeelDemo.Set MaxShakeRotation 8</code>.</p>
+<p>The map brings its own game mode (World Settings); your maps are not affected.</p>
+<h3 id="2-make-it-yours">2. Make it yours</h3>
+<ol>
+<li><strong>Tools &gt; Create Built-in Game Feel Presets</strong> saves all 42 presets as assets in <code>/Game/GameFeelKit/Presets</code>.</li>
+<li>Open one (for example <code>DA_GFK_HitHeavy</code>) and change values, or add effects with <strong>+</strong>.</li>
+<li>Use <strong>Play Feedback</strong> with your asset instead of the built-in one.</li>
+</ol>
+<p>A new preset: <strong>Content Browser &gt; Add &gt; Miscellaneous &gt; Game Feel Preset</strong>.</p>
+<h3 id="3-tune-while-playing">3. Tune while playing</h3>
+<p>Open <strong>Tools &gt; Game Feel Timeline</strong> and press Play. Every preset that fires appears on the graph with its channels: shake, FOV, flash, time stop, filters, vibration. <strong>Replay</strong> plays it again on the same target. Edit the asset, press Replay, and compare.</p>
+<h3 id="4-effects">4. Effects</h3>
+<table>
+<thead>
+<tr>
+<th>Effect</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Camera Shake</td>
+<td>Noise, sine or directional kick, with distance falloff, no shake asset needed</td>
+</tr>
+<tr>
+<td>FOV Kick</td>
+<td>Quick zoom in or out</td>
+</tr>
+<tr>
+<td>Hitstop</td>
+<td>Freezes the game or only the target for a few frames</td>
+</tr>
+<tr>
+<td>Slow Motion</td>
+<td>Time scale with an envelope</td>
+</tr>
+<tr>
+<td>Screen Flash</td>
+<td>Color flash, protected by the Flash Guard</td>
+</tr>
+<tr>
+<td>Screen Filter</td>
+<td>Vignette, chromatic aberration, desaturation, tint, pulse</td>
+</tr>
+<tr>
+<td>Scale Punch</td>
+<td>Spring scale pop or squash and stretch that keeps the volume</td>
+</tr>
+<tr>
+<td>Transform Punch</td>
+<td>Recoil along the hit direction with a wobble</td>
+</tr>
+<tr>
+<td>Material Flash</td>
+<td>Material parameter or custom primitive data (the white hit flash)</td>
+</tr>
+<tr>
+<td>Light Flash</td>
+<td>Short point light</td>
+</tr>
+<tr>
+<td>Sound</td>
+<td>Random pitch, volume follows intensity</td>
+</tr>
+<tr>
+<td>Niagara Burst</td>
+<td>Spawns a system, aligned to the hit</td>
+</tr>
+<tr>
+<td>Vibration</td>
+<td>Procedural controller rumble, no asset needed</td>
+</tr>
+<tr>
+<td>Floating Number</td>
+<td>Damage, critical, heal, miss; rapid hits merge</td>
+</tr>
+<tr>
+<td>Text Pop</td>
+<td>"PERFECT!" on screen</td>
+</tr>
+<tr>
+<td>Blueprint Event</td>
+<td>Your own logic</td>
+</tr>
+</tbody>
+</table>
+<p>For the white hit flash, add a scalar parameter <code>HitFlash</code> to your material: lerp the base color to white by it.</p>
+<h3 id="5-mixer-and-limits">5. Mixer and limits</h3>
+<p>Many effects at once stay readable:
+- Shakes, FOV kicks and filters are summed and soft-limited.
+- Lower priorities are ducked.
+- Hitstop has a budget per second, so a minigun never freezes the game.</p>
+<p>Limits are in <strong>Project Settings &gt; Plugins &gt; Game Feel Kit</strong>.</p>
+<h3 id="6-accessibility-ship-it-in-your-options-menu">6. Accessibility (ship it in your options menu)</h3>
+<p>Bind these nodes to your options menu:
+- <strong>Get Accessibility</strong> and <strong>Set Accessibility</strong>: sliders for camera shake, camera motion, screen flash, time effects, vibration and screen effects, plus a numbers on/off switch.
+- <strong>Apply Reduce Motion</strong>: one switch for motion-sensitive players.</p>
+<p>The <strong>Flash Guard</strong> is on by default. It allows at most three flashes per second and dims saturated red flashes (WCAG 2.3.1).</p>
+<p>Settings are saved per player in <code>GameUserSettings.ini</code>.</p>
+<h3 id="7-multiplayer">7. Multiplayer</h3>
+<p>Feedback is cosmetic and local. Play it on the client that should feel it; nothing runs on a dedicated server. For hitstop in multiplayer, use <strong>Scope: Target</strong> (only the hit actor freezes).</p>
+<h3 id="8-c">8. C++</h3>
+<pre><code class="language-cpp">#include &quot;GameFeelBlueprintLibrary.h&quot;
+UGameFeelBlueprintLibrary::PlayFeedback(this, HitPreset, HitActor, 0.8f, Damage);
+</code></pre>
+<p>Custom effect: subclass <code>UGameFeelEffect</code> and override <code>Start</code> (return an <code>FGameFeelInstance</code> for effects that run over time).</p>
+<h2 id="quick-start-unity">Quick start (Unity)</h2>
+<p>Game Feel Kit adds "juice" to any Unity game: camera shake, hitstop, flashes, punches, vibration and floating numbers. Effects are bundled into presets and played with one call.</p>
+<p>Requirements: Unity 6 (6000.6), any render pipeline. With URP, screen filters use a URP Volume; without it, a simple overlay. Vibration needs the Input System package.</p>
+<h3 id="1-install">1. Install</h3>
+<p><strong>Package Manager &gt; + &gt; Add package from disk</strong>, then pick <code>com.alicemedia.gamefeel/package.json</code>.</p>
+<h3 id="demo-scene-juice-lab">Demo scene: Juice Lab</h3>
+<p><strong>Package Manager &gt; Game Feel Kit &gt; Samples &gt; Juice Lab (URP) &gt; Import</strong>, open <code>Scenes/GameFeel_JuiceLab_Day</code> (or <code>_Night</code>) and press <strong>Play</strong>. Three robot dummies stand on a pier; the demo plays all 42 built-in presets with their names. <strong>Left / Right</strong> pick a preset, <strong>Space</strong> plays it, <strong>Up / Down</strong> pick a dummy, <strong>A</strong> toggles autoplay, <strong>Tab</strong> opens the accessibility panel, <strong>R</strong> applies Reduce Motion. The scene uses URP materials; the package itself works in the built-in pipeline too.</p>
+<h3 id="2-play-a-built-in-preset">2. Play a built-in preset</h3>
+<p>When an enemy takes damage:</p>
+<pre><code class="language-csharp">using AliceMedia.GameFeel;
+
+GameFeel.Play(GameFeelBuiltIn.HitHeavy, enemy.gameObject, intensity: 1f, value: damage);
+</code></pre>
+<p>The camera kicks, the game freezes for a few frames, the enemy recoils and the number pops above it.
+- <strong>Intensity:</strong> a light hit 0.3, a heavy one 1.
+- <strong>Value:</strong> the damage shown.
+- <strong>Direction (optional):</strong> the hit direction, for the recoil and the camera kick.</p>
+<p>No code: add <strong>Game Feel &gt; Game Feel Player</strong> to the enemy, set a preset per name, and call <strong>Play Feedback ("Hit")</strong> from a UnityEvent.</p>
+<h3 id="3-make-it-yours">3. Make it yours</h3>
+<ol>
+<li><strong>Tools &gt; Game Feel &gt; Create Built-in Presets</strong> saves all 42 presets as assets in <code>Assets/GameFeelKit/Presets</code> (existing assets are kept).</li>
+<li>Select one (for example <code>GF_HitHeavy</code>) and change values, or add effects with <strong>Add Effect</strong>. In Play Mode, <strong>Play on Selection</strong> plays it on the selected object.</li>
+<li>Play your asset: <code>GameFeel.Play(myPreset, target, 1f, damage)</code>.</li>
+</ol>
+<p>A new preset: <strong>Assets &gt; Create &gt; Game Feel &gt; Preset</strong>.</p>
+<h3 id="4-tune-while-playing">4. Tune while playing</h3>
+<p>Open <strong>Window &gt; Analysis &gt; Game Feel Timeline</strong> and press Play.
+- Every preset that fires is listed, and its channels (shake, FOV, flash, time stop, filters, vibration) are drawn on a graph.
+- <strong>Replay</strong> plays it again on the same target.</p>
+<h3 id="5-effects">5. Effects</h3>
+<p>Camera Shake, FOV Kick, Hitstop, Slow Motion, Screen Flash, Screen Filter, Scale Punch (squash and stretch that keeps the volume), Transform Punch, Material Flash, Light Flash, Sound, Particle Burst, Vibration, Floating Number, Text Pop, Event.</p>
+<p><strong>White hit flash on the material:</strong> add a float property <code>_HitFlash</code> to your shader (Shader Graph: a Float named <code>_HitFlash</code>, used to lerp the base color to white). The flash sets it through a MaterialPropertyBlock and resets it when it ends.</p>
+<p><strong>Camera:</strong> shake and FOV kicks are added to the main camera only while it renders and removed after, so they never fight your camera controller or Cinemachine. Set <code>GameFeel.Camera</code> to use another camera.</p>
+<p><strong>Time:</strong>
+- Hitstop and slow motion change <code>Time.timeScale</code> and put your game's own value back. A pause that sets <code>timeScale</code> during a hitstop is kept.
+- <strong>Hitstop Scope: Target</strong> freezes only the target's Animators and particle systems; use it in multiplayer.</p>
+<h3 id="6-mixer-and-limits">6. Mixer and limits</h3>
+<ul>
+<li>Shakes, FOV kicks and filters are summed and soft-limited; lower priorities are ducked.</li>
+<li>Hitstop has a budget per second, so a minigun never freezes the game.</li>
+</ul>
+<p>Limits: <strong>Tools &gt; Game Feel &gt; Settings</strong> creates <code>Assets/GameFeelKit/Resources/GameFeelSettings.asset</code>.</p>
+<h3 id="7-accessibility">7. Accessibility</h3>
+<p>Bind these to your options menu:
+- <code>GameFeel.Accessibility</code> and <code>GameFeel.SetAccessibility(...)</code>: sliders for camera shake, camera motion, screen flash, time effects, vibration and screen effects, and a numbers switch. Saved per player in PlayerPrefs.
+- <code>GameFeel.ReduceMotion(true)</code>: one switch for motion-sensitive players.</p>
+<p>The <strong>Flash Guard</strong> is on by default. It allows at most three flashes per second and dims saturated red flashes (WCAG 2.3.1).</p>
+<h3 id="8-stopping">8. Stopping</h3>
+<ul>
+<li><code>var handle = GameFeel.Play(GameFeelBuiltIn.LowHealth);</code>, later <code>GameFeel.Stop(handle);</code>. Held effects fade out; pass <code>immediate: true</code> to drop them at once.</li>
+<li><code>GameFeel.StopAll()</code> stops everything and puts time, materials and lights back.</li>
+</ul>
+<h2 id="changelog">Changelog</h2>
+<h3 id="101">1.0.1</h3>
+<ul>
+<li>Supports Unreal Engine 5.6, 5.7 and 5.8.</li>
+<li>Demo console: <code>GameFeelDemo.PlayWith &lt;preset&gt; &lt;target&gt; &lt;intensity&gt; Effect.Property=Value ...</code> plays a built-in preset with edited effects (for example <code>CameraShake.Frequency=6</code> or <code>Number.Kind=Heal</code>), and <code>GameFeelDemo.Set &lt;Property&gt; &lt;Value&gt;</code> changes a project setting for the session (mixer limits). Handy for tuning from the console.</li>
+</ul>
+<h3 id="100-first-release">1.0.0 (first release)</h3>
+<ul>
+<li><strong>16 effects:</strong> camera shake (noise, sine, directional kick), FOV kick, hitstop, slow motion, screen flash, screen filter, scale punch with squash and stretch, transform punch, material flash, light flash, sound, Niagara burst, controller vibration, floating number, text pop, Blueprint event.</li>
+<li><strong>Presets:</strong> a Primary Data Asset plays any mix of effects with one node. 42 built-in presets, which can be saved as editable assets with <strong>Tools &gt; Create Built-in Game Feel Presets</strong>.</li>
+<li><strong>Mixer:</strong> shakes, FOV kicks and filters are summed and soft-limited; lower priorities are ducked.</li>
+<li><strong>Hitstop:</strong></li>
+<li>global, or only the hit actor;</li>
+<li>priorities;</li>
+<li>a budget per second, so rapid hits never freeze the game.</li>
+<li><strong>Floating numbers:</strong> damage, critical, heal and miss; rapid hits on one target merge; large values are shortened (1.2K).</li>
+<li><strong>Accessibility:</strong></li>
+<li>sliders for camera shake, camera motion, flashes, time effects, vibration and screen effects;</li>
+<li>a numbers switch and Reduce Motion;</li>
+<li>saved in <code>GameUserSettings.ini</code>.</li>
+<li><strong>Flash Guard:</strong> at most three flashes per second, saturated red flashes dimmed (WCAG 2.3.1). On by default.</li>
+<li><strong>Game Feel Timeline:</strong> an editor window that graphs every preset fired in Play In Editor, with Replay.</li>
+<li>C++ with full Blueprint support; cosmetic and local, safe in multiplayer.</li>
+</ul>
+<h2 id="third-party-content">Third-party content</h2>
+<p>None. All code, the 42 built-in presets (defined in code), the icon and the demo map (<code>Content/Demo</code>: meshes made procedurally in Blender by our own script, procedural materials) are original work by Alice Media. The plugin uses only engine modules and the engine's Niagara plugin.</p>
+<p>No AI-generated content (images, sounds, voice) is included in the product.</p>
+<h2 id="support">Support</h2>
+<p>Questions, bugs and ideas: <a href="https://github.com/alicemedia-cmyk/alice-media-docs/issues">https://github.com/alicemedia-cmyk/alice-media-docs/issues</a>. Please include your engine version and the Game Feel Kit version (1.0.1).</p>
+</main>
+<footer>&copy; 2026 Alice Media. Support: <a href="https://github.com/alicemedia-cmyk/alice-media-docs/issues">https://github.com/alicemedia-cmyk/alice-media-docs/issues</a></footer>
+</body></html>
