@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Build Size Report documentation | Alice Media</title><link rel="stylesheet" href="../style.css"></head>
+<body><header><div class="in"><a class="brand" href="../index.html">Alice Media docs</a></div></header>
+<main><h1>Build Size Report</h1>
+<p class="lead">See the real bytes on disk of every package in your packaged build, what each fix saves, and how big the next Steam patch will be. Read-only, with an HTML report and a CI budget check.</p>
+<img class="cover" src="../img/build-size-report.jpg" alt="Build Size Report">
+<div class="links"><a href="https://github.com/alicemedia-cmyk/alice-media-docs/issues">Support</a></div>
+<nav class="toc"><a href="#quick-start-unreal-engine">Quick start (Unreal Engine)</a> <a href="#quick-start-unity">Quick start (Unity)</a> <a href="#changelog">Changelog</a> <a href="#third-party-content">Third-party content</a></nav>
+<h2 id="quick-start-unreal-engine">Quick start (Unreal Engine)</h2>
+<p>Build Size Report shows what really takes space in your packaged game, why each asset is in the build, and how much you save by fixing it. It reads the finished build, so the numbers are the bytes players download, not editor estimates. It never deletes anything.</p>
+<p>Requirements: Unreal Engine 5.6, 5.7 or 5.8, Windows. The plugin is editor-only: nothing of it ends up in your game.</p>
+<h3 id="1-install">1. Install</h3>
+<ol>
+<li>Copy <code>BuildSizeReport</code> into <code>&lt;YourProject&gt;/Plugins/</code>, or enable it from the Fab library.</li>
+<li>Restart the editor. The window is under <strong>Tools &gt; Build Size Report</strong>.</li>
+</ol>
+<h3 id="2-package-the-game">2. Package the game</h3>
+<p>Use <strong>Platforms &gt; Windows &gt; Package Project</strong> or your BuildCookRun script as usual. Any configuration works; Shipping gives the real numbers.</p>
+<h3 id="3-analyze">3. Analyze</h3>
+<ol>
+<li>Open <strong>Tools &gt; Build Size Report</strong>.</li>
+<li><strong>Build</strong>: pick the build folder. Any of these works:
+   - the folder with the game <code>.exe</code>;
+   - the archive folder that contains it (for example <code>Builds/1.2</code> with <code>Windows/</code> inside).</li>
+</ol>
+<p>Recent builds and <code>Saved/StagedBuilds</code> are found automatically. Otherwise use <strong>Browse...</strong>.
+3. Press <strong>Analyze</strong>. A snapshot of the build is saved automatically (<code>Saved/BuildSizeReport/Snapshots</code>).</p>
+<p>You get:
+- <strong>Overview</strong>: size by category, budget status, biggest wins.
+- <strong>Assets</strong>: every package and file with its size on disk. Sort, filter, and double click to find it in the Content Browser.
+- <strong>Treemap</strong>: click folders to open them, right click to go up.
+- <strong>Recipes</strong>: what to change and how much it saves. <strong>Apply</strong> changes the setting with Undo; the asset is marked dirty, not saved.
+- <strong>Duplicates</strong>: byte-identical textures, sounds and files stored more than once.
+- <strong>Details</strong> (right panel): select an asset to see <strong>Why is it in the build?</strong>, the chain of references from a map or startup setting to the asset.</p>
+<h3 id="4-compare-builds-and-estimate-the-patch">4. Compare builds and estimate the patch</h3>
+<p>After the next build:
+1. In <strong>Compare with</strong>, choose the earlier snapshot.
+2. Press <strong>Analyze</strong> again.</p>
+<p>The <strong>Changes</strong> tab lists what grew, shrank, appeared and disappeared.</p>
+<p>The <strong>Patch download</strong> card estimates how much a player downloads to update, for block-based patchers such as SteamPipe. It is a range:
+- <strong>Low end:</strong> new and changed data only.
+- <strong>High end:</strong> also data that did not change but moved inside a container. Adding one texture early in a container shifts everything after it. The gap between the two numbers is how much your patch depends on the patcher finding moved data again.</p>
+<h3 id="5-share">5. Share</h3>
+<ul>
+<li><strong>HTML report</strong>: a single file with every table and the treemap. It works offline in any browser. Links to a section open there, for example <code>report.html#recipes</code>.</li>
+<li><strong>CSV</strong>: every package with its sizes.</li>
+</ul>
+<h3 id="6-budgets-and-ci">6. Budgets and CI</h3>
+<p>Set limits in <strong>Project Settings &gt; Plugins &gt; Build Size Report</strong>: total size, growth, patch size and folder budgets. They are stored in <code>DefaultEditor.ini</code> for the whole team. On the build machine (no GPU needed):</p>
+<pre><code>UnrealEditor-Cmd.exe MyGame.uproject -run=BuildSizeReport -Build=&quot;D:/Builds/1.2&quot; -Baseline=latest -Label=%BUILD_NUMBER% -nullrhi -unattended
+</code></pre>
+<ul>
+<li><strong>Exit code:</strong> <code>0</code> within budget, <code>1</code> over budget, <code>2</code> on error.</li>
+<li><strong>Output:</strong> an HTML report, a snapshot, and a Markdown summary to paste into the pull request.</li>
+<li><strong>Options:</strong></li>
+<li><code>-Out=&lt;folder&gt;</code>, <code>-Markdown=&lt;file&gt;</code>;</li>
+<li><code>-BudgetMB=</code>, <code>-MaxGrowthMB=</code>, <code>-MaxGrowthPercent=</code>;</li>
+<li><code>-MaxPatchMB=</code>: compared with the low end of the patch estimate (new and changed data), so moved data never fails the build;</li>
+<li><code>-NoAssets</code>: skip asset inspection, faster;</li>
+<li><code>-NoSnapshot</code>.</li>
+</ul>
+<p>Blueprint and Python: <code>UBuildSizeReportFunctions.AnalyzeBuild(BuildFolder, BaselineSnapshot, Label)</code>.</p>
+<h3 id="reading-the-numbers">Reading the numbers</h3>
+<ul>
+<li>Sizes are bytes on disk after compression, in binary units (1 MB = 1024 KB). The total equals the size of the build folder.</li>
+<li><strong>Files outside containers</strong>: the executable, its DLLs, debug symbols (<code>.pdb</code>) and other loose files. In Development builds with debug files included, this is often the largest block.</li>
+<li><strong>Engine data</strong>: what the engine needs in every game, such as the asset registry, config, internationalization and global shaders.</li>
+<li><strong><code>&lt;container&gt; (index and padding)</code></strong>: the table of contents and alignment of an IoStore or pak container.</li>
+<li><strong><code>&lt;container&gt; (shader code)</code> / <code>(script objects)</code> / <code>(container header)</code></strong>: data without a package name, attributed to its container.</li>
+<li><strong>Plugin content</strong> (for example a plugin that is enabled by default but unused): turn the plugin off in <strong>Edit &gt; Plugins</strong> if your game does not need it.</li>
+</ul>
+<h3 id="troubleshooting">Troubleshooting</h3>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"Build folder not found" or nothing is listed</td>
+<td>Pick the folder with the <code>.exe</code>, or its archive folder. Building into <code>Saved/StagedBuilds</code> also works.</td>
+</tr>
+<tr>
+<td>Many files show as unattributed</td>
+<td>The containers are encrypted. Analyze an unencrypted test build for full detail.</td>
+</tr>
+<tr>
+<td>A recipe points at engine content</td>
+<td>It does not: engine and engine-plugin assets are excluded from recipes because they can not be changed in a project.</td>
+</tr>
+<tr>
+<td>The patch range is wide</td>
+<td>Data moved inside the container. Keeping the cook order stable, or putting rarely changing content in its own chunk, narrows it.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="quick-start-unity">Quick start (Unity)</h2>
+<p>Build Size Report shows what really takes space in your player build, how much each fix saves, and how big the next patch will be. It reads the finished build, so the numbers are the bytes players download. It never deletes anything.</p>
+<p>Requirements: Unity 6 (6000.6), any render pipeline. The package is editor-only: nothing of it ends up in your game.</p>
+<h3 id="1-install">1. Install</h3>
+<p><strong>Package Manager &gt; + &gt; Add package from disk</strong>, then pick <code>com.alicemedia.buildsizereport/package.json</code>. The window is under <strong>Window &gt; Analysis &gt; Build Size Report</strong>.</p>
+<h3 id="2-build-and-analyze">2. Build and analyze</h3>
+<ol>
+<li>Build your player as usual (<strong>File &gt; Build Profiles &gt; Build</strong>).</li>
+<li>Open <strong>Window &gt; Analysis &gt; Build Size Report</strong>. The last build folder is filled in.</li>
+<li>Press <strong>Analyze</strong>.</li>
+</ol>
+<p>A snapshot of every successful build is also kept automatically (<code>BuildSizeReport/Snapshots</code> in the project folder), so the next build can be compared.</p>
+<p>You get:
+- <strong>Overview:</strong> size on disk, possible savings, size by category, budget status.
+- <strong>Assets:</strong> every asset and file with its size on disk. Click an asset to select it in the Project window.
+- <strong>Recipes:</strong> what to change and how much it saves.
+  - <strong>Apply</strong> changes the import or project setting; <strong>Revert</strong> puts the previous value back.
+  - Recipes: texture size and compression, mipmaps on sprites and UI, PCM and ADPCM sounds, development builds, managed stripping, debug symbols, do-not-ship folders, Resources and StreamingAssets, duplicates.
+- <strong>Duplicates:</strong> byte-identical data stored more than once (for example the same image imported twice).
+- <strong>Changes:</strong> pick a snapshot in <strong>Compare with</strong> to see what grew, shrank, appeared and disappeared, and the patch download estimate.
+- <strong>Open Report:</strong> a single HTML file with a treemap and every table, which works offline in any browser. Send it to your team.</p>
+<h3 id="3-the-patch-estimate">3. The patch estimate</h3>
+<p>The estimate is for block-based patchers such as SteamPipe, and it is a range:
+- <strong>Low end:</strong> new and changed data only.
+- <strong>High end:</strong> also data that did not change but moved inside its file.</p>
+<p>A new asset early in a file shifts everything after it; the gap between the two numbers is how much your patch depends on the patcher finding moved data again.</p>
+<h3 id="4-budgets-and-ci">4. Budgets and CI</h3>
+<p>Set limits in <strong>Project Settings &gt; Build Size Report</strong>: total size, growth, patch size and folder budgets. The settings are saved in <code>ProjectSettings</code> for the whole team.</p>
+<p>On the build machine (no GPU needed), after your build step:</p>
+<pre><code>Unity -batchmode -nographics -projectPath . -executeMethod AliceMedia.BuildSizeReport.BuildSizeReportCI.Run -bsrBuild Builds/Windows -bsrBaseline latest -bsrLabel %BUILD_NUMBER% -bsrMarkdown size.md
+</code></pre>
+<ul>
+<li><strong>Exit code:</strong> <code>0</code> within budget, <code>1</code> over budget, <code>2</code> on error.</li>
+<li><strong>Output:</strong> the HTML report, a snapshot, and a Markdown summary to paste into the pull request.</li>
+<li><strong>Options:</strong></li>
+<li><code>-bsrOut &lt;folder&gt;</code>;</li>
+<li><code>-bsrBudgetMB</code>, <code>-bsrMaxGrowthMB</code>, <code>-bsrMaxGrowthPercent</code>;</li>
+<li><code>-bsrMaxPatchMB</code>: compared with the low end of the patch estimate;</li>
+<li><code>-bsrNoRecipes</code>, <code>-bsrNoSnapshot</code>.</li>
+</ul>
+<p>Run the analysis in the same project that made the build: Unity's build report tells which asset is stored where. For any other folder the sizes are per file.</p>
+<h3 id="reading-the-numbers">Reading the numbers</h3>
+<ul>
+<li>Sizes are bytes on disk, in binary units (1 MB = 1024 KB). The total equals the size of the build folder.</li>
+<li><strong>Files without an asset:</strong> the player executable, UnityPlayer.dll, managed assemblies, the Mono or IL2CPP runtime, and Unity's own data files.</li>
+<li><strong><code>&lt;file&gt; (header and padding)</code>:</strong> the part of a data file that no asset owns.</li>
+<li><strong>Built-in assets</strong> (Unity's default resources) are listed with Unity's names and never suggested.</li>
+<li><strong>Compressed player data:</strong> asset sizes are scaled to the compressed files, and changes are compared by size.</li>
+</ul>
+<h2 id="changelog">Changelog</h2>
+<h3 id="100-first-release-unreal-engine-56-57-and-58">1.0.0 (first release, Unreal Engine 5.6, 5.7 and 5.8)</h3>
+<ul>
+<li><strong>Real build sizes:</strong></li>
+<li>reads IoStore containers (<code>.utoc/.ucas</code>), pak files and loose files of a packaged build;</li>
+<li>reports the compressed bytes on disk of every package and file;</li>
+<li>the total equals the size of the build folder;</li>
+<li>an archive folder (with <code>Windows/</code> inside) is resolved automatically.</li>
+<li><strong>Report:</strong></li>
+<li>categories, folders, a squarified treemap, the largest assets;</li>
+<li>byte-identical duplicates (hash of the stored data);</li>
+<li>"Why is it in the build?" reference chains from maps, Always Cook folders, Primary Asset Labels and startup settings.</li>
+<li><strong>Recipes with estimated savings:</strong></li>
+<li>textures larger than needed and uncompressed formats;</li>
+<li>PCM / ADPCM sounds;</li>
+<li>debug symbols and Development builds;</li>
+<li>Cook All, Starter Content and templates, plugin content, compression settings;</li>
+<li>assets that ship without a reference from your maps.</li>
+</ul>
+<p>Engine content is never suggested. <strong>Apply</strong> changes the setting with Undo and never deletes anything.
+- <strong>Builds over time:</strong>
+  - snapshots of every analysis;
+  - comparison with any earlier build;
+  - patch download estimate for block-based patchers (new, changed and moved data, as a range).
+- <strong>Sharing:</strong> single-file offline HTML report with section links (<code>#recipes</code>), CSV export, Markdown summary.
+- <strong>CI:</strong>
+  - <code>-run=BuildSizeReport</code> commandlet (works with <code>-nullrhi</code>);
+  - budgets for total size, growth, patch size and folders;
+  - exit code 1 over budget.
+- Blueprint and Python function <code>AnalyzeBuild</code>.</p>
+<h2 id="third-party-content">Third-party content</h2>
+<p>None. All code, the HTML report (including its script and styles) and the icon are original work by Alice Media. The report uses no external libraries, fonts or web resources.</p>
+<p>The demo project used for the screenshots and the video contains only procedurally generated textures and sounds (<code>Project/Tools/make_demo_source.py</code>) and engine basic shapes. It is not part of the product.</p>
+<p>No AI-generated content (images, sounds, voice) is included in the product.</p>
+<h2 id="support">Support</h2>
+<p>Questions, bugs and ideas: <a href="https://github.com/alicemedia-cmyk/alice-media-docs/issues">https://github.com/alicemedia-cmyk/alice-media-docs/issues</a>. Please include your engine version and the Build Size Report version (1.0.0).</p>
+</main>
+<footer>&copy; 2026 Alice Media. Support: <a href="https://github.com/alicemedia-cmyk/alice-media-docs/issues">https://github.com/alicemedia-cmyk/alice-media-docs/issues</a></footer>
+</body></html>
