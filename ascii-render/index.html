@@ -1,0 +1,974 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ASCII Render documentation | Alice Media</title><link rel="stylesheet" href="../style.css"></head>
+<body><header><div class="in"><a class="brand" href="../index.html">Alice Media docs</a></div></header>
+<main><h1>ASCII Render</h1>
+<p class="lead">Turn any Unreal scene into art-directed ASCII: nine looks from ink hatching to terminal text, symbols sized by depth, hatching that follows surfaces, contours and code rain. One volume, no setup.</p>
+<img class="cover" src="../img/ascii-render.jpg" alt="ASCII Render">
+<div class="links"><a href="https://github.com/alicemedia-cmyk/alice-media-docs/issues">Support</a></div>
+<nav class="toc"><a href="#quick-start-unreal-engine">Quick start (Unreal Engine)</a> <a href="#quick-start-unity">Quick start (Unity)</a> <a href="#reference">Reference</a> <a href="#changelog">Changelog</a> <a href="#third-party-content">Third-party content</a></nav>
+<h2 id="quick-start-unreal-engine">Quick start (Unreal Engine)</h2>
+<p>ASCII Render turns any Unreal Engine 5 scene into art-directed text-mode rendering. It is a screen-space effect that reads the
+scene's depth and surface normals, so symbols shrink with distance, hatching follows the forms, contours become stroke
+symbols and distance fades into haze. No material changes, works with any content.</p>
+<h3 id="1-enable">1. Enable</h3>
+<ol>
+<li>Copy <code>AsciiRender</code> into your project's <code>Plugins</code> folder (or enable it from the engine plugins list).</li>
+<li>Restart the editor. Windows 64-bit, Unreal Engine 5.6, 5.7 or 5.8.</li>
+</ol>
+<h3 id="1b-try-the-demo-map">1b. Try the demo map</h3>
+<p>Content Browser → <strong>Settings → Show Plugin Content</strong> → <code>AsciiRender Content/Demo/NeonAlley/Maps/L_NeonAlley_Night</code> → <strong>Play</strong>.
+A night neon alley (our own content, ~80 MB, Nanite) with a courier robot, ten cameras and one ASCII Render Volume.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1–9</td>
+<td>Presets: Ink Hatch, Engraving, Terminal, Bold Hatch, Keycap Mosaic, Code Figure, Code Storm, Schematic, Noir</td>
+</tr>
+<tr>
+<td>0</td>
+<td>Effect on / off</td>
+</tr>
+<tr>
+<td>Left / Right</td>
+<td>Previous / next camera</td>
+</tr>
+<tr>
+<td>F</td>
+<td>Camera fly-through</td>
+</tr>
+<tr>
+<td>M</td>
+<td>Object mask: robot keeps its look → ASCII only on the robot → signs keep their look → off</td>
+</tr>
+<tr>
+<td>V</td>
+<td>Reveal wave growing out of the robot</td>
+</tr>
+<tr>
+<td>R</td>
+<td>Robot drives along the street</td>
+</tr>
+<tr>
+<td>H</td>
+<td>Help</td>
+</tr>
+</tbody>
+</table>
+<p>For the mask demo set <strong>Project Settings → Rendering → Postprocessing → Custom Depth-Stencil Pass</strong> to <em>Enabled with Stencil</em>
+(the robot is stencil 1, the car 2, signs and neon 3). The scene is lit with Lumen; hardware ray tracing makes it look best
+but the effect itself does not need it. The demo actors live in the small <code>AsciiRenderShowcase</code> module.</p>
+<h3 id="2-add-the-effect">2. Add the effect</h3>
+<ol>
+<li><strong>Place Actors</strong> panel → search <strong>ASCII Render Volume</strong> → drag it into the level.</li>
+<li>It is <strong>Unbound</strong> by default: the whole level gets the effect. Untick <strong>Unbound</strong> and scale the volume to limit it to an area
+   (the highest <strong>Priority</strong> volume around the camera wins).</li>
+</ol>
+<h3 id="3-pick-a-look">3. Pick a look</h3>
+<p>In <strong>Details → ASCII Render → Preset</strong> choose a starting point:</p>
+<table>
+<thead>
+<tr>
+<th>Preset</th>
+<th>Look</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ink Hatch</td>
+<td>Painted picture, letters hatch the shadows (default)</td>
+</tr>
+<tr>
+<td>Bold Hatch</td>
+<td>Stronger hatching and contour symbols, comic ink</td>
+</tr>
+<tr>
+<td>Engraving</td>
+<td>Ordered strokes that follow the forms, cross-hatching in the dark</td>
+</tr>
+<tr>
+<td>Keycap Mosaic</td>
+<td>Picture as a mosaic of keycap tiles with contours</td>
+</tr>
+<tr>
+<td>Code Figure</td>
+<td>Fine bright symbols on dim tiles, the dark falls away</td>
+</tr>
+<tr>
+<td>Code Storm</td>
+<td>Full symbol field, big symbols near and small far</td>
+</tr>
+<tr>
+<td>Schematic</td>
+<td>Blueprint drawing: navy / pale cyan, stroke-symbol contours</td>
+</tr>
+<tr>
+<td>Noir</td>
+<td>Black and white, heavy form hatching, haze</td>
+</tr>
+<tr>
+<td>Terminal</td>
+<td>Pure text on black with a neon palette and glow</td>
+</tr>
+</tbody>
+</table>
+<p>Picking a preset fills every setting below. Everything stays editable; <strong>Reset To Preset</strong> brings the preset back,
+<strong>Custom (Keep Settings)</strong> means "no preset".</p>
+<h3 id="4-tune">4. Tune</h3>
+<p>The <strong>Main</strong> section holds the sliders that change the look most: Symbol Size, Size By Depth, Hatching Follows Form,
+Shadow Letters, Light Letters, Picture, Mosaic, Shadows To Black, Code Rain, Contour Symbols, Glints, Symbol Variety,
+Contours, Glow, Effect Strength. The other sections hold the details. See <code>Reference.md</code> for every setting.</p>
+<p>Flicker and code rain move in the editor when the viewport is <strong>Realtime</strong>.</p>
+<h3 id="5-per-camera-per-object-gameplay">5. Per camera, per object, gameplay</h3>
+<ul>
+<li><strong>ASCII Render Camera</strong> component on a pawn or camera actor: its own look (<strong>Override</strong>), the volumes (<strong>Inherit</strong>) or no effect (<strong>Disabled</strong>).</li>
+<li><strong>Objects → Apply To</strong>: only marked objects, or everything except them. Mark an object: <em>Rendering → Render CustomDepth Pass</em> on,
+  <em>Custom Depth Stencil Value</em> set (and <strong>Marked Stencil Value</strong> to match, 0 = any). Needs <strong>Project Settings → Rendering →
+  Postprocessing → Custom Depth-Stencil Pass = Enabled with Stencil</strong>; without it masks and object outlines are skipped
+  (the Output Log says so).</li>
+<li><strong>Reveal</strong>: ASCII only inside a sphere with a glowing symbol band at its edge (or only outside, <strong>Invert</strong>). From Blueprint:
+  <code>Set Reveal Sphere (Center, Radius, Invert)</code> and animate the radius for a scan wave; <code>Disable Reveal Sphere</code>.</li>
+<li>Any setting from Blueprint: <code>Set Setting Number ("Haze", 0.5)</code>, <code>Set Setting From Text ("HazeColor", "(R=1,G=0.5,B=0,A=1)")</code>,
+  <code>Set Built In Look (Noir)</code>.</li>
+<li><strong>Look assets</strong> (Content Browser → Miscellaneous → Data Asset → <em>AsciiRenderLook</em>): share one look between levels; set it in
+  <strong>Look Asset (Overrides Settings)</strong>.</li>
+</ul>
+<h3 id="console">Console</h3>
+<ul>
+<li><code>r.AsciiRender.Enable 0/1</code> — master switch.</li>
+<li><code>r.AsciiRender.ForceLook N</code> — preset on every view (−1 off; 0 Ink Hatch, 1 Engraving, 2 Terminal, 3 Bold Hatch, 4 Keycap Mosaic, 5 Code Figure, 6 Code Storm, 7 Schematic, 8 Noir).</li>
+<li><code>r.AsciiRender.Set "DepthScale=1;Haze=0.5"</code> — override settings live (property names from <code>Reference.md</code>; write <code>|</code> for <code>,</code> inside values).</li>
+</ul>
+<h3 id="performance">Performance</h3>
+<p>One full-screen pass set per view at output resolution plus small per-cell passes (three cell grids with Size By Depth).
+Typical cost on an RTX 4090 at 1080p is well under a millisecond; scene captures, reflections and planar reflections are skipped.</p>
+<h2 id="quick-start-unity">Quick start (Unity)</h2>
+<p>ASCII Render turns a URP scene into ASCII art that reads like a drawing, not like a filter:</p>
+<ul>
+<li>Tone comes from the light, with local contrast and automatic levels.</li>
+<li>Contours are drawn with directional stroke symbols.</li>
+<li>Walls, floors and ceilings get their own symbol families.</li>
+<li>Hatching follows the forms, and symbols are bigger near the camera.</li>
+<li>Distance fades into haze, and symbols stick to the world instead of swimming.</li>
+</ul>
+<p>It is the same renderer as the Unreal version, ported pass by pass.</p>
+<p><strong>Requirements:</strong> Unity 6 (6000.0 or newer), the Universal Render Pipeline (URP 17), and a graphics API with compute shaders (DirectX 11/12, Vulkan or Metal).</p>
+<h3 id="1-first-look-1-minute">1. First look (1 minute)</h3>
+<ol>
+<li>Open <strong>Window &gt; Package Manager &gt; + &gt; Add package from disk</strong> and pick <code>com.alicemedia.asciirender/package.json</code>.</li>
+<li>Use <strong>GameObject &gt; ASCII Render &gt; ASCII Render Volume</strong>.</li>
+<li>Press Play, or just look at the Scene and Game views: the volume is unbound, so it applies everywhere.</li>
+</ol>
+<p>No renderer asset changes are needed: the volume adds its pass to every URP camera by itself.</p>
+<h3 id="2-looks">2. Looks</h3>
+<p>Pick a <strong>Preset</strong> on the volume. It fills every setting; the settings stay editable, and <strong>Reset To Preset</strong> (in the component's context menu) restores them.</p>
+<table>
+<thead>
+<tr>
+<th>Preset</th>
+<th>Look</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ink Hatch</td>
+<td>A painted picture with letters hatching the shadows (default).</td>
+</tr>
+<tr>
+<td>Bold Hatch</td>
+<td>Letters reach the mid-tones; bright strokes accent the highlights.</td>
+</tr>
+<tr>
+<td>Engraving</td>
+<td>Ordered strokes: walls <code>/</code> then <code>X</code>, floors <code>-</code> then <code>=</code>.</td>
+</tr>
+<tr>
+<td>Schematic</td>
+<td>A blueprint drawing: navy and pale cyan duotone, contours drawn with strokes.</td>
+</tr>
+<tr>
+<td>Noir</td>
+<td>Black and white, heavy form hatching, distance into haze.</td>
+</tr>
+<tr>
+<td>Keycap Mosaic</td>
+<td>Mosaic tiles with small symbols; shadows fall out to black, code rain behind.</td>
+</tr>
+<tr>
+<td>Code Figure</td>
+<td>Surfaces built from bright symbols; everything dark or far is black with code columns.</td>
+</tr>
+<tr>
+<td>Code Storm</td>
+<td>A field of flickering symbols with rain over everything.</td>
+</tr>
+<tr>
+<td>Terminal</td>
+<td>Full text mode on black, with a neon palette and glow.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Ascii Amount</strong> (Main) is one knob for the amount of ASCII in the layered looks; 0.5 is the look as authored.</p>
+<h3 id="3-where-it-applies">3. Where it applies</h3>
+<ul>
+<li><strong>Volumes:</strong></li>
+<li>Untick <strong>Unbound</strong> to limit a volume to its box (<strong>Size</strong>, around the object).</li>
+<li>The highest <strong>Priority</strong> volume that contains the camera wins.</li>
+<li><strong>Per camera:</strong> add <strong>ASCII Render Camera</strong> to a camera (<strong>GameObject &gt; ASCII Render &gt; Add ASCII Render Camera To Selected Camera</strong>). It has three modes:</li>
+<li><strong>Override</strong>: its own look;</li>
+<li><strong>Inherit</strong>: the volumes decide;</li>
+<li><strong>Disabled</strong>: never for this camera.</li>
+<li><strong>Cameras that render into a render texture</strong> are skipped, like scene captures in Unreal, unless they have an ASCII Render Camera in Override mode or <code>AsciiRenderSystem.ApplyToRenderTextureCameras</code> is on.</li>
+</ul>
+<p>Runtime API:</p>
+<ul>
+<li><code>AsciiRenderSystem.Enabled</code> is the master switch.</li>
+<li><code>AsciiRenderSystem.ForceLook</code> forces one look on every camera.</li>
+<li><code>AsciiRenderSystem.AmountOverride</code> overrides the amount on every camera.</li>
+<li><code>volume.ApplyPreset(...)</code> switches a volume's look.</li>
+<li><code>volume.Settings</code> gives every setting; changes apply in the next frame.</li>
+</ul>
+<h3 id="4-objects-and-effects">4. Objects and effects</h3>
+<ul>
+<li><strong>Marked objects:</strong> put objects on a layer and select it in <strong>Objects &gt; Marked Layers</strong>. <strong>Object Outlines</strong> draws their outlines. <strong>Object Mask</strong> turns only them into ASCII, or everything except them.</li>
+<li><strong>Reveal:</strong> a sphere (<strong>Reveal Center</strong>, <strong>Reveal Radius</strong>). Outside it the rendered picture shows, with a band of glowing symbols at the edge (<strong>Reveal Edge</strong>, <strong>Reveal Invert</strong>). Animate it for transitions.</li>
+<li><strong>Tone From Lighting:</strong> divides the picture by the material colour, so dark textures stop reading as shadow. It needs URP's Deferred rendering path; in Forward it has no effect.</li>
+<li><strong>Fonts:</strong> <strong>Symbols &gt; Font</strong> takes an <strong>ASCII Render Font</strong> asset (<strong>Assets &gt; Create &gt; ASCII Render &gt; Font Atlas</strong>): an atlas texture, its characters, its columns and the glyph aspect. Empty uses the built-in JetBrains Mono atlas (SIL Open Font License, in <code>Licenses/</code>).</li>
+</ul>
+<h3 id="5-performance">5. Performance</h3>
+<p>All passes are compute shaders in the URP render graph:</p>
+<ul>
+<li>geometry and contours at the camera resolution;</li>
+<li>the cell passes on the small cell grids (three nested grids with <strong>Depth Scale</strong>);</li>
+<li>a composite, an optional glow and one blit.</li>
+</ul>
+<p>Units are meters, so <strong>Fog Distance</strong>, <strong>Haze Start / End</strong>, <strong>Depth Scale Near / Far</strong> and the reveal radius are in meters.</p>
+<h2 id="reference">Reference</h2>
+<p>Every setting lives on the <strong>ASCII Render Volume</strong> (Details → sections below), on the <strong>ASCII Render Camera</strong> component and in <strong>Look</strong> assets. Picking a <strong>Preset</strong> fills all of them; everything stays editable.
+Names in <code>code</code> are the property names for Blueprint <code>Set Setting Number</code> / <code>Set Setting From Text</code> and the console command <code>r.AsciiRender.Set "Name=Value;Name=Value"</code>.</p>
+<h3 id="main">Main</h3>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mode</td>
+<td><code>Finish</code></td>
+<td>Layered: the picture with letter layers (every look except Terminal). Terminal: pure text on a dark background with palette and glow.</td>
+</tr>
+<tr>
+<td>Symbol Size</td>
+<td><code>CellHeight</code></td>
+<td>Cell height in pixels at 1080p (scales with resolution). Smaller = more, finer symbols.</td>
+</tr>
+<tr>
+<td>Shadow Letters</td>
+<td><code>InkStrength</code></td>
+<td>Dark letters that hatch the shadows (0 = none).</td>
+</tr>
+<tr>
+<td>Light Letters</td>
+<td><code>LightLetters</code></td>
+<td>Bright letters on lit surfaces (0 = none, 1 = full symbol field).</td>
+</tr>
+<tr>
+<td>Picture</td>
+<td><code>PictureBrightness</code></td>
+<td>Brightness of the picture under the letters (0 = letters on black, like printed ASCII art).</td>
+</tr>
+<tr>
+<td>Mosaic</td>
+<td><code>TileAmount</code></td>
+<td>0 = painted picture, 1 = every cell one flat tile of its colour.</td>
+</tr>
+<tr>
+<td>Shadows To Black</td>
+<td><code>BlackCut</code></td>
+<td>Cells darker than this drop out to the background: shadows and silhouettes made of absence.</td>
+</tr>
+<tr>
+<td>Code Rain</td>
+<td><code>RainAmount</code></td>
+<td>Share of columns with falling code in the black areas (0 = off).</td>
+</tr>
+<tr>
+<td>Size By Depth</td>
+<td><code>DepthScale</code></td>
+<td>0 = one symbol size everywhere; 1 = big symbols near the camera, small ones far away (the grid splits with distance).</td>
+</tr>
+<tr>
+<td>Hatching Follows Form</td>
+<td><code>FormHatching</code></td>
+<td>Shadow strokes ('/ | \ -') run along the surfaces instead of one ramp everywhere: hatching wraps the forms like an engraving.</td>
+</tr>
+<tr>
+<td>Contour Symbols</td>
+<td><code>ContourSymbols</code></td>
+<td>Silhouettes and creases drawn with stroke symbols ('/ | \ _ -') instead of only lines.</td>
+</tr>
+<tr>
+<td>Glints</td>
+<td><code>LightSymbols</code></td>
+<td>The strongest light peaks (lamps, hot highlights) become sparse bright '*' / '+' sparkles.</td>
+</tr>
+<tr>
+<td>Symbol Variety</td>
+<td><code>SymbolVariety</code></td>
+<td>0 = the symbol strictly follows the tone (clean gradients), 1 = any symbol of the set (code texture).</td>
+</tr>
+<tr>
+<td>Contours</td>
+<td><code>LineStrength</code></td>
+<td>Contour lines on silhouettes, creases and outlined objects.</td>
+</tr>
+<tr>
+<td>Glow</td>
+<td><code>Glow</code></td>
+<td>Glow around bright symbols.</td>
+</tr>
+<tr>
+<td>Effect Strength</td>
+<td><code>Opacity</code></td>
+<td>Blend with the original image (0 = original, 1 = full effect).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="depth-and-form">Depth And Form</h3>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Symbols Stick To World</td>
+<td><code>bWorldAnchored</code></td>
+<td>Random symbol choice is seeded by the world position under the cell, so symbols hold on to surfaces instead of boiling when the camera moves.</td>
+</tr>
+<tr>
+<td>Big Symbols Until</td>
+<td><code>DepthScaleNear</code></td>
+<td>Size By Depth: up to this distance symbols are at their biggest.</td>
+</tr>
+<tr>
+<td>Small Symbols From</td>
+<td><code>DepthScaleFar</code></td>
+<td>Size By Depth: from this distance symbols are at their smallest.</td>
+</tr>
+<tr>
+<td>Size Border Jitter</td>
+<td><code>DepthScaleJitter</code></td>
+<td>Breaks the borders between symbol sizes into a ragged mix (0 = clean rings).</td>
+</tr>
+<tr>
+<td>Cross-Hatch From</td>
+<td><code>CrossHatchFrom</code></td>
+<td>Hatching Follows Form: shadow density where strokes cross into X (1 = never).</td>
+</tr>
+<tr>
+<td>Depth Haze</td>
+<td><code>Haze</code></td>
+<td>Aerial perspective: distance loses contrast, colour and symbols into the haze colour.</td>
+</tr>
+<tr>
+<td>Haze Colour</td>
+<td><code>HazeColor</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Haze Start</td>
+<td><code>HazeStart</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Haze Full</td>
+<td><code>HazeEnd</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="objects">Objects</h3>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Apply To</td>
+<td><code>ObjectMask</code></td>
+<td>Limit the effect to marked objects or keep marked objects untouched. Mark an object: Render CustomDepth Pass on, Custom Depth Stencil Value set.</td>
+</tr>
+<tr>
+<td>Marked Stencil Value</td>
+<td><code>MarkedStencilValue</code></td>
+<td>Stencil value that marks objects (0 = any non-zero value).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="reveal">Reveal</h3>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Use Reveal Sphere</td>
+<td><code>bReveal</code></td>
+<td>Only the inside of a sphere is ASCII (or only the outside when inverted); a glowing band of symbols runs along its edge. Drive Centre / Radius from Blueprint for scans and transitions.</td>
+</tr>
+<tr>
+<td>Centre</td>
+<td><code>RevealCenter</code></td>
+<td>World position of the sphere centre.</td>
+</tr>
+<tr>
+<td>Radius</td>
+<td><code>RevealRadius</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Edge Width</td>
+<td><code>RevealEdge</code></td>
+<td>Width of the glowing symbol band at the edge.</td>
+</tr>
+<tr>
+<td>Edge Colour</td>
+<td><code>RevealEdgeColor</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Invert</td>
+<td><code>bRevealInvert</code></td>
+<td>ASCII outside the sphere, the rendered picture inside.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="symbols">Symbols</h3>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Symbol Set</td>
+<td><code>SymbolSet</code></td>
+<td>Characters for light letters and code rain (and shadow letters when enabled below). Any order: they are sorted by ink coverage.</td>
+</tr>
+<tr>
+<td>Flicker</td>
+<td><code>SymbolFlicker</code></td>
+<td>How often symbols change, per second (0 = still). Needs Realtime in the editor viewport.</td>
+</tr>
+<tr>
+<td>Symbol Scale In Cell</td>
+<td><code>SymbolScale</code></td>
+<td>Symbol size inside its cell (small symbols inside tiles read like keycaps).</td>
+</tr>
+<tr>
+<td>Shadow Letters Use Symbol Set</td>
+<td><code>bInkUsesSymbolSet</code></td>
+<td>Shadow letters take the symbol set instead of the hatching ramps below.</td>
+</tr>
+<tr>
+<td>Hatching On Walls</td>
+<td><code>WallRamp</code></td>
+<td>Shadow letters on walls and other vertical surfaces, light to dense (first character = empty).</td>
+</tr>
+<tr>
+<td>Hatching On Floors</td>
+<td><code>FloorRamp</code></td>
+<td>Shadow letters on floors and up-facing surfaces, light to dense.</td>
+</tr>
+<tr>
+<td>Hatching On Ceilings</td>
+<td><code>CeilingRamp</code></td>
+<td>Shadow letters on ceilings and down-facing surfaces, light to dense.</td>
+</tr>
+<tr>
+<td>Dither</td>
+<td><code>Dither</code></td>
+<td>Ordered dithering between neighbouring hatching steps (0 = hard steps).</td>
+</tr>
+<tr>
+<td>Font</td>
+<td><code>Font</code></td>
+<td>Glyph atlas. Empty = the built-in JetBrains Mono. <em>(advanced)</em></td>
+</tr>
+<tr>
+<td>Light Source Symbol</td>
+<td><code>LightGlyph</code></td>
+<td>Terminal mode: symbol drawn on light sources. <em>(advanced)</em></td>
+</tr>
+</tbody>
+</table>
+<h3 id="shadow-letters">Shadow Letters</h3>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Reach Into Mid-Tones</td>
+<td><code>FillFrom</code></td>
+<td>Lower = letters reach further from the shadows into the mid-tones; higher = only the deepest shadows.</td>
+</tr>
+<tr>
+<td>Letter Darkness</td>
+<td><code>InkDarkness</code></td>
+<td>Letter colour = surface colour times this (0 = black letters).</td>
+</tr>
+<tr>
+<td>Stipple Lightest Step</td>
+<td><code>bStipple</code></td>
+<td>The lightest hatching step only in every other cell.</td>
+</tr>
+<tr>
+<td>Density From Darkness</td>
+<td><code>bInvertDensity</code></td>
+<td>Letter density follows darkness (ink looks) instead of light (terminal looks). <em>(advanced)</em></td>
+</tr>
+</tbody>
+</table>
+<h3 id="light-letters">Light Letters</h3>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Start From Brightness</td>
+<td><code>LightLettersFrom</code></td>
+<td>0 = bright letters on every surface, 0.8 = only on highlights.</td>
+</tr>
+<tr>
+<td>Letter Brightness</td>
+<td><code>LightLetterBrightness</code></td>
+<td>Bright letter colour = surface colour times this (above 1 they glow when Glow is on).</td>
+</tr>
+<tr>
+<td>Highlights To White</td>
+<td><code>LightLetterWhiteness</code></td>
+<td>Bright letters on the brightest surfaces turn towards white.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="light-sources">Light Sources</h3>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Light Detect Start</td>
+<td><code>LightPeakStart</code></td>
+<td>How far a cell must outshine its surroundings (log2) to start being a light source.</td>
+</tr>
+<tr>
+<td>Light Detect Full</td>
+<td><code>LightPeakFull</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Light Halo</td>
+<td><code>Halo</code></td>
+<td>Symbol halo around lights.</td>
+</tr>
+<tr>
+<td>Light Halo Radius</td>
+<td><code>HaloRadius</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="picture">Picture</h3>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Saturation</td>
+<td><code>SceneSaturation</code></td>
+<td>Colour saturation of the picture and the symbols.</td>
+</tr>
+<tr>
+<td>Paint Bands</td>
+<td><code>PaintBands</code></td>
+<td>Number of value bands of the painted picture.</td>
+</tr>
+<tr>
+<td>Paint Banding</td>
+<td><code>PaintBanding</code></td>
+<td>0 = original shading, 1 = flat painted bands.</td>
+</tr>
+<tr>
+<td>Paint Smoothing</td>
+<td><code>PaintSmoothing</code></td>
+<td>Smoothing before banding, pixels at 1080p (cleaner bands on noisy textures).</td>
+</tr>
+<tr>
+<td>Tile Gap Darkness</td>
+<td><code>TileGap</code></td>
+<td>Darkness of the gap between cells (keycap / LED look).</td>
+</tr>
+<tr>
+<td>Tile Gap Width</td>
+<td><code>TileGapWidth</code></td>
+<td>Gap width in pixels at 1080p.</td>
+</tr>
+<tr>
+<td>Tile Bevel</td>
+<td><code>TileBevel</code></td>
+<td>Lit top edge / dark bottom edge of every tile.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="color">Color</h3>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Duotone</td>
+<td><code>Duotone</code></td>
+<td>Recolours the picture between a shadow colour and a light colour.</td>
+</tr>
+<tr>
+<td>Shadow Colour</td>
+<td><code>ShadowTint</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Light Colour</td>
+<td><code>LightTint</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Posterize Steps</td>
+<td><code>PosterizeSteps</code></td>
+<td>Limits every colour channel to this many steps (0 = off).</td>
+</tr>
+<tr>
+<td>Vignette</td>
+<td><code>Vignette</code></td>
+<td>Darkens the frame towards its edges.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="black-and-distance">Black And Distance</h3>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ragged Edge</td>
+<td><code>BlackFringe</code></td>
+<td>Ragged, dithered border of the black.</td>
+</tr>
+<tr>
+<td>Distance To Black</td>
+<td><code>DistanceFade</code></td>
+<td>Distant cells darken towards the black.</td>
+</tr>
+<tr>
+<td>Fade Distance</td>
+<td><code>FogDistance</code></td>
+<td>Distance where the fade (and the terminal fog) is complete.</td>
+</tr>
+<tr>
+<td>Black Sky</td>
+<td><code>bBlackSky</code></td>
+<td>The sky drops out to the background too.</td>
+</tr>
+<tr>
+<td>Background Colour</td>
+<td><code>Background</code></td>
+<td>Colour of the black areas.</td>
+</tr>
+<tr>
+<td>Sky Distance</td>
+<td><code>SkyDistance</code></td>
+<td>Pixels farther than this count as sky. <em>(advanced)</em></td>
+</tr>
+</tbody>
+</table>
+<h3 id="code-rain">Code Rain</h3>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Over The Picture</td>
+<td><code>RainOverPicture</code></td>
+<td>Code rain also falls over the picture with this strength.</td>
+</tr>
+<tr>
+<td>Colour</td>
+<td><code>RainColor</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Brightness</td>
+<td><code>RainBrightness</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Speed</td>
+<td><code>RainSpeed</code></td>
+<td>Cells per second. Needs Realtime in the editor viewport.</td>
+</tr>
+<tr>
+<td>Trail Length</td>
+<td><code>RainLength</code></td>
+<td>Trail length in cells.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="contours">Contours</h3>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Line Colour</td>
+<td><code>LineColor</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Silhouette Sensitivity</td>
+<td><code>SilhouetteThreshold</code></td>
+<td>Relative depth jump between neighbour pixels that draws a silhouette (lower = more lines).</td>
+</tr>
+<tr>
+<td>Crease Angle</td>
+<td><code>CreaseAngle</code></td>
+<td>Angle between surfaces that draws a crease line.</td>
+</tr>
+<tr>
+<td>Crease Lines</td>
+<td><code>CreaseWeight</code></td>
+<td>Strength of crease lines.</td>
+</tr>
+<tr>
+<td>Crease Max Distance</td>
+<td><code>CreaseMaxDistance</code></td>
+<td>Creases farther than this are ignored (they turn into noise).</td>
+</tr>
+<tr>
+<td>Outline Stencil Objects</td>
+<td><code>bObjectOutlines</code></td>
+<td>Outline objects that render Custom Depth with a stencil value.</td>
+</tr>
+<tr>
+<td>Stroke Cell Fraction</td>
+<td><code>EdgeCellFraction</code></td>
+<td>Terminal mode: fraction of a cell's pixels that must be edges to draw a stroke symbol. <em>(advanced)</em></td>
+</tr>
+<tr>
+<td>Stroke Agreement</td>
+<td><code>EdgeAgreement</code></td>
+<td>Terminal mode: share of edge pixels that must agree on one direction. <em>(advanced)</em></td>
+</tr>
+</tbody>
+</table>
+<h3 id="tone">Tone</h3>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Local Contrast</td>
+<td><code>LocalContrast</code></td>
+<td>Separates forms of similar brightness.</td>
+</tr>
+<tr>
+<td>Equalize</td>
+<td><code>Equalize</code></td>
+<td>Spreads cells over every symbol step on dark and bright scenes alike (0 = linear levels).</td>
+</tr>
+<tr>
+<td>Gamma</td>
+<td><code>Gamma</code></td>
+<td>Above 1 darkens the mid-tones, below 1 brightens them.</td>
+</tr>
+<tr>
+<td>Glow Radius</td>
+<td><code>GlowRadius</code></td>
+<td>Pixels at 1080p.</td>
+</tr>
+<tr>
+<td>Local Contrast Radius</td>
+<td><code>LocalContrastRadius</code></td>
+<td>In cells. <em>(advanced)</em></td>
+</tr>
+<tr>
+<td>Levels Dark %</td>
+<td><code>LevelsLowPercent</code></td>
+<td>Dark percentile of the frame mapped to 0. <em>(advanced)</em></td>
+</tr>
+<tr>
+<td>Levels Bright %</td>
+<td><code>LevelsHighPercent</code></td>
+<td>Bright percentile of the frame mapped to 1. <em>(advanced)</em></td>
+</tr>
+</tbody>
+</table>
+<h3 id="terminal">Terminal</h3>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Colour Mode</td>
+<td><code>ColorMode</code></td>
+<td>Palette: nearest palette hue; Scene: the scene colour; Mono: one colour.</td>
+</tr>
+<tr>
+<td>Palette</td>
+<td><code>Palette</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Neutral / Mono Colour</td>
+<td><code>NeutralColor</code></td>
+<td>Colour of grey cells in palette mode and the mono colour.</td>
+</tr>
+<tr>
+<td>Palette Saturation Threshold</td>
+<td><code>SaturationThreshold</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Brightness Floor</td>
+<td><code>BrightnessFloor</code></td>
+<td>Symbol brightness at the darkest filled cell.</td>
+</tr>
+<tr>
+<td>Stroke Brightness</td>
+<td><code>EdgeBrightness</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Cell Background Tint</td>
+<td><code>CellBackgroundTint</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Sky Dots</td>
+<td><code>SkyDots</code></td>
+<td>Sparse dim dots in the sky.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="changelog">Changelog</h2>
+<h3 id="100-first-release-unreal-engine-56-57-and-58">1.0.0 (first release, Unreal Engine 5.6, 5.7 and 5.8)</h3>
+<ul>
+<li>Layered ASCII rendering: painted picture or tile mosaic, dark shadow letters, bright light letters, shadows to black, code rain.</li>
+<li>Space and form: symbol size by depth (three nested grids), hatching that follows surface orientation with cross-hatching, depth haze, symbols anchored to the world (no boiling when the camera moves).</li>
+<li>Contours as stroke symbols, glints on light peaks, duotone, posterize, vignette.</li>
+<li>Object mask by Custom Depth Stencil (only marked / everything except marked).</li>
+<li>Reveal sphere with a glowing symbol edge, Blueprint-driven.</li>
+<li>Terminal mode: pure text with palette, light halos and glow.</li>
+<li>Nine presets; presets fill editable settings; Reset To Preset; settings laid out in sections in the Details panel.</li>
+<li>Blueprint: Set Built In Look, Set Setting Number, Set Setting From Text, Set Reveal Sphere, Disable Reveal Sphere.</li>
+<li>Console: r.AsciiRender.Enable, r.AsciiRender.ForceLook, r.AsciiRender.Set.</li>
+<li>Demo map: night neon alley with a courier robot, ten cameras, fly-through; keys 1–9 presets, M object mask, V reveal wave.</li>
+<li>Presets tuned so shapes stay readable on close-ups (finer symbols, gentler size by depth, strokes only on clear edges).</li>
+<li>Glow is taken from symbols only, so the rendered picture outside a reveal sphere or under a mask keeps its exposure.</li>
+</ul>
+<h2 id="third-party-content">Third-party content</h2>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Where</th>
+<th>License</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>JetBrains Mono (font, rasterised into the built-in glyph atlas)</td>
+<td><code>Plugins/AsciiRender/Resources/Atlas/JetBrainsMono.png</code></td>
+<td>SIL Open Font License 1.1, full text in <code>Plugins/AsciiRender/Resources/Licenses/JetBrainsMono_OFL.txt</code></td>
+</tr>
+</tbody>
+</table>
+<p>| M PLUS 1 Code (font, rendered into the sign textures of the demo map) | <code>Plugins/AsciiRender/Content/Demo/NeonAlley/Textures</code> | SIL Open Font License 1.1, full text in <code>Plugins/AsciiRender/Resources/Licenses/MPLUS1Code_OFL.txt</code> |</p>
+<p>Everything else (code, shaders, icon, presets, the demo map: meshes made procedurally in Blender, procedural textures and materials) is original work by Alice Media. No AI-generated content is included.</p>
+<h2 id="support">Support</h2>
+<p>Questions, bugs and ideas: <a href="https://github.com/alicemedia-cmyk/alice-media-docs/issues">https://github.com/alicemedia-cmyk/alice-media-docs/issues</a>. Please include your engine version and the ASCII Render version (1.0.0).</p>
+</main>
+<footer>&copy; 2026 Alice Media. Support: <a href="https://github.com/alicemedia-cmyk/alice-media-docs/issues">https://github.com/alicemedia-cmyk/alice-media-docs/issues</a></footer>
+</body></html>
