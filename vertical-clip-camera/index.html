@@ -1,0 +1,649 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vertical Clip Camera 9:16 documentation | Alice Media</title><link rel="stylesheet" href="../style.css"></head>
+<body><header><div class="in"><a class="brand" href="../index.html">Alice Media docs</a></div></header>
+<main><h1>Vertical Clip Camera 9:16</h1>
+<p class="lead">Record HUD-free 1080x1920 clips of your game and save the last 30 seconds as an MP4 with one key: instant replay, slow motion and highlight reels for TikTok, YouTube Shorts and Instagram Reels.</p>
+<img class="cover" src="../img/vertical-clip-camera.jpg" alt="Vertical Clip Camera 9:16">
+<div class="links"><a href="https://github.com/alicemedia-cmyk/alice-media-docs/issues">Support</a></div>
+<nav class="toc"><a href="#quick-start-unreal-engine">Quick start (Unreal Engine)</a> <a href="#quick-start-unity">Quick start (Unity)</a> <a href="#changelog">Changelog</a> <a href="#third-party-content">Third-party content</a></nav>
+<h2 id="quick-start-unreal-engine">Quick start (Unreal Engine)</h2>
+<p>Vertical Clip Camera records a HUD-free 1080x1920 (9:16) view of your game into an instant-replay buffer. It frames your player or any target automatically. With one key or one Blueprint node you get an MP4 for TikTok, YouTube Shorts or Instagram Reels:</p>
+<ul>
+<li>the last 30 seconds, or a manual clip of any length;</li>
+<li>a slow-motion clip;</li>
+<li>a highlight reel of the session.</li>
+</ul>
+<p>It also takes 9:16 screenshots, pops up animated captions, cuts between several cameras by itself and records a second format (16:9, 1:1 or 4:5) at the same time. Everything works in Play In Editor (PIE) and in packaged Win64 games.</p>
+<p>Requirements: Unreal Engine 5.6 to 5.8, Windows 10/11 64-bit, DirectX 12 or 11. The H.264 and AAC encoders come with Windows (Media Foundation). On Windows "N" editions, install the Media Feature Pack.</p>
+<hr />
+<h3 id="1-record-your-first-clip-2-minutes">1. Record your first clip (2 minutes)</h3>
+<ol>
+<li>Enable the plugin: <strong>Edit &gt; Plugins &gt; Vertical Clip Camera 9:16</strong>, then restart the editor.</li>
+<li>Press <strong>Play</strong>. Recording starts automatically. If the level has no Vertical Clip Camera, one is spawned that follows player 0.</li>
+<li>Play for a few seconds, then press <strong>Ctrl+F9</strong>. A "Clip saved" toast appears. In the editor, a notification offers <strong>Open</strong> and <strong>Show in Folder</strong>.</li>
+<li>The clip is written to <code>&lt;Project&gt;/Saved/VerticalClips/Clip_&lt;date&gt;_&lt;time&gt;_9x16.mp4</code>, with a JPEG thumbnail next to it. Browse all clips in <strong>Tools &gt; Vertical Clip Camera &gt; Clip Gallery</strong>.</li>
+</ol>
+<p>Press <strong>Ctrl+F10</strong> to show the floating 9:16 preview. The preview, the toasts and the recording indicator are UI, so they never appear in the clip. Your HUD, UMG widgets and debug text are not recorded either.</p>
+<p>In a packaged game, clips go to <code>Videos/&lt;ProjectName&gt;</code> in the player's user folder. You can change the folder in the settings.</p>
+<h3 id="2-hotkeys-and-console-commands">2. Hotkeys and console commands</h3>
+<p>The hotkeys work in PIE and in packaged games without any input setup. Keys are only observed, never consumed, so your game still receives them. These are the defaults; every one of them can be changed.</p>
+<table>
+<thead>
+<tr>
+<th>Hotkey</th>
+<th>Action</th>
+<th>Console command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ctrl+F9</td>
+<td>Save the last Default Clip Seconds</td>
+<td><code>ClipCam.Save [seconds]</code></td>
+</tr>
+<tr>
+<td>Ctrl+F8</td>
+<td>Start a manual clip; press again to save it</td>
+<td><code>ClipCam.Manual</code></td>
+</tr>
+<tr>
+<td>Ctrl+F7</td>
+<td>9:16 screenshot (PNG)</td>
+<td><code>ClipCam.Screenshot</code></td>
+</tr>
+<tr>
+<td>Ctrl+F6</td>
+<td>Mark a highlight for the reel</td>
+<td><code>ClipCam.Mark [title]</code></td>
+</tr>
+<tr>
+<td>Ctrl+F10</td>
+<td>Show or hide the preview</td>
+<td><code>ClipCam.Preview</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+F9</td>
+<td>Save the highlight reel</td>
+<td><code>ClipCam.Reel</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+F8</td>
+<td>Save the last seconds in slow motion</td>
+<td><code>ClipCam.SlowMo [seconds] [speed]</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+F10</td>
+<td>Cut to the next camera</td>
+<td><code>ClipCam.NextCamera</code></td>
+</tr>
+</tbody>
+</table>
+<p>More console commands:</p>
+<ul>
+<li><code>ClipCam.Caption &lt;text&gt;</code>: pop up a caption.</li>
+<li><code>ClipCam.Captions [0|1]</code>: turn captions off or on.</li>
+<li><code>ClipCam.PunchIn [zoom] [seconds]</code>: zoom in and back out once.</li>
+<li><code>ClipCam.Director [0|1]</code>: turn the auto director off or on.</li>
+<li><code>ClipCam.Start</code> and <code>ClipCam.Stop</code>: start or stop recording.</li>
+<li><code>ClipCam.Stats</code>: print the recorder statistics.</li>
+</ul>
+<p>The same actions are in the editor menu <strong>Tools &gt; Vertical Clip Camera</strong> while PIE runs. The menu tooltips show the keys as they are bound right now.</p>
+<p><strong>Changing the hotkeys</strong></p>
+<ul>
+<li><strong>For the project</strong>: open <strong>Project Settings &gt; Plugins &gt; Vertical Clip Camera &gt; Hotkeys</strong>, click a key field and press the new combination. To turn one hotkey off, clear its field. To turn all of them off, untick <strong>Enable Hotkeys</strong>.</li>
+<li><strong>For each player, at runtime</strong>: call <strong>Set Clip Cam Hotkey (Action, Chord)</strong>. It plugs straight into the UMG <strong>Input Key Selector</strong> widget (its Selected Key is a chord), so a settings menu needs no extra code.</li>
+<li>Related nodes: <strong>Get Clip Cam Hotkey Text</strong> for labels, <strong>Reset Clip Cam Hotkeys</strong>, and <strong>Set Clip Cam Hotkeys Enabled</strong>.</li>
+<li>The player's bindings are saved in their <code>GameUserSettings.ini</code> and override the project's.</li>
+<li><strong>From the console</strong>:</li>
+<li><code>ClipCam.Hotkeys</code> lists the bindings;</li>
+<li><code>ClipCam.BindHotkey SaveClip Ctrl+Shift+F5</code> rebinds one (<code>None</code> turns it off);</li>
+<li><code>ClipCam.ResetHotkeys</code> goes back to the project's bindings.</li>
+<li>Action names: SaveClip, TogglePreview, ManualClip, Screenshot, MarkHighlight, SaveReel, SlowMotion, NextCamera.</li>
+</ul>
+<h3 id="3-place-and-frame-a-camera-2-minutes">3. Place and frame a camera (2 minutes)</h3>
+<ol>
+<li>Drag <strong>Vertical Clip Camera</strong> from the Place Actors panel into the level. You can also add the <strong>Vertical Clip Camera</strong> component to any actor, for example your character.</li>
+<li>Choose a <strong>Framing Mode</strong>:
+   - <strong>Follow Player</strong>: follows the pawn of <code>Player Index</code>.
+   - <strong>Point Of Interest</strong>: follows <code>Point Of Interest Actor</code>, or <code>Point Of Interest Location</code> when no actor is set.
+   - <strong>Manual</strong>: no automatic framing. Move the camera yourself from Blueprints or Sequencer, or set <code>Manual Crop Center</code> in Main View Crop mode.</li>
+<li>Choose a <strong>Source Mode</strong>:</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Source mode</th>
+<th>What it does</th>
+<th>Cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Dedicated Camera</strong> (default)</td>
+<td>A second, HUD-free 9:16 render with its own position and auto-framing. Rig styles: <strong>Follow</strong> (travels with the target), <strong>Tripod</strong> (stays in place and pans) and <strong>Orbit</strong> (circles the target at <code>Orbit Degrees Per Second</code>).</td>
+<td>A second scene render. Lower it with <code>Capture Resolution Scale</code> (0.67 gives 720x1280, upscaled).</td>
+</tr>
+<tr>
+<td><strong>Main View Crop</strong></td>
+<td>Crops a 9:16 window out of the main game view before the HUD is drawn, and moves the window to keep the target framed.</td>
+<td>Almost free (no second render). It is sharpest at 1440p or 4K window sizes.</td>
+</tr>
+</tbody>
+</table>
+<ol start="4">
+<li>Tune the framing in the details panel:
+   - <strong>Dead Zone</strong>: the target can move freely inside this part of the frame.
+   - <strong>Position Smooth Time</strong> and <strong>Rotation Smooth Time</strong>: how quickly the camera catches up.
+   - <strong>Lead Time</strong> and <strong>Max Lead Distance</strong>: look-ahead along the target's velocity.
+   - <strong>Follow Offset</strong>, <strong>Look At Offset</strong> and <strong>Vertical Field Of View</strong>: the shot itself.
+   - <strong>Teleport Distance</strong>: a jump larger than this cuts instead of flying.
+   - <strong>Do Collision Test</strong>: keeps the camera in front of walls.
+   - <strong>Handheld Shake</strong> and <strong>Handheld Frequency</strong>: an organic handheld wobble (0 is rock steady).
+   - <strong>Camera Label</strong>: the name shown under the preview and in the <code>{Camera}</code> file name token.</li>
+</ol>
+<p>If several cameras are placed, the one with the highest <strong>Priority</strong> records. To cut to another camera, call <strong>Set Active Camera</strong> on the subsystem, <strong>Activate For Recording</strong> on the camera, <strong>Cut To Next Camera</strong>, or let the director do it (section 7).</p>
+<p><strong>Punch In (Zoom, Duration)</strong> on a camera zooms in quickly and eases back out, for hits, goals or finishers. It works in both source modes.</p>
+<h3 id="4-saving-replay-manual-clips-slow-motion-screenshots">4. Saving: replay, manual clips, slow motion, screenshots</h3>
+<ul>
+<li><strong>Save Clip (Seconds)</strong>: the last N seconds (0 means Default Clip Seconds) of the replay buffer.</li>
+<li><strong>Manual clip</strong>: <strong>Start Manual Clip</strong> and <strong>Stop Manual Clip</strong>, or Ctrl+F8. Everything in between is kept, even beyond the replay buffer, up to <strong>Max Manual Clip Seconds</strong> (300 s by default). A "CLIP 0:12" indicator shows while it records. At 12 Mbit/s, one minute needs about 90 MB of memory.</li>
+<li><strong>Slow motion</strong>: <strong>Save Slow Motion Clip (Seconds, Playback Speed)</strong>, or Ctrl+Shift+F8. The frames are retimed without re-encoding, so a 60 fps recording at 0.5 plays as smooth 30 fps at twice the length. Slow-motion clips have no sound. <strong>Save Clip With Options</strong> combines length, speed, audio, second format and a file name suffix.</li>
+<li><strong>Screenshots</strong>: <strong>Take Screenshot</strong>, or Ctrl+F7. This saves the next composed 9:16 frame as PNG, with overlays and captions. It also works when nothing records (the camera renders a few frames first). <strong>On Screenshot Saved (Success, Path)</strong> fires when the file is written.</li>
+<li><strong>Thumbnails</strong>: every clip gets a JPEG of its last frame (<code>_9x16.jpg</code>, 540 px wide by default) for galleries and upload covers.</li>
+</ul>
+<h3 id="5-highlights-reel-and-captions">5. Highlights, reel and captions</h3>
+<p>Report gameplay moments with <strong>Notify Gameplay Event (Tag, Title, Description)</strong>. Tags listed in <strong>Highlight Tags</strong> make a highlight. The plugin defines <code>ClipCam.Event.Highlight</code> and <code>ClipCam.Event.Marker</code>. A highlight does all of this, and you can turn each part off in the settings:</p>
+<ol>
+<li><strong>Automatic clip</strong>: saved after <strong>Auto Clip Post Roll Seconds</strong> (option <strong>Auto Save Highlight Clips</strong>).</li>
+<li><strong>Reel moment</strong>: from <strong>Reel Pre Roll Seconds</strong> before the highlight to <strong>Reel Post Roll Seconds</strong> after it.</li>
+<li><strong>Punch-in</strong>: on the recording camera (<strong>Highlight Punch In Zoom</strong>, where 1 means off).</li>
+<li><strong>Director cut</strong>: to a camera marked <strong>Highlight Camera</strong>.</li>
+<li><strong>Caption</strong>, only if you turn it on (<strong>Overlays &gt; Captions &gt; Caption Highlight Events</strong>, off by default): the Title pops up in the clip.</li>
+</ol>
+<p><strong>Mark Highlight (Title)</strong>, or Ctrl+F6, keeps a moment for the reel without saving a clip file. This is handy when you play for marketing footage.</p>
+<p><strong>Save Highlight Reel</strong>, or Ctrl+Shift+F9, joins the newest moments that fit <strong>Max Reel Seconds</strong> (60 s by default) into one vertical MP4, oldest first. The cuts are hard, with no re-encoding, and the sound stays in sync at every cut. Overlapping highlights become one longer moment. Moments use memory up to <strong>Reel Memory MB</strong>; the oldest are dropped beyond that.</p>
+<p><strong>Captions</strong> are optional. Nothing pops up unless you call <strong>Show Caption (Text, Hold Seconds)</strong> or turn on <strong>Caption Highlight Events</strong>.</p>
+<ul>
+<li><strong>Overlays &gt; Captions &gt; Enabled</strong> is the master switch. Off means no caption is ever drawn, even from Show Caption calls.</li>
+<li><strong>Set Captions Enabled</strong> does the same at runtime, for example as an option in your game's settings menu. So does <code>ClipCam.Captions 0</code>.</li>
+</ul>
+<p>You can style captions in <strong>Overlays &gt; Captions</strong>:</p>
+<ul>
+<li>font, size and upper case;</li>
+<li>text colour, outline, shadow and an optional plate;</li>
+<li>position;</li>
+<li>animation: pop scale, pop-in, hold and fade-out times.</li>
+</ul>
+<p>Captions are burned into the vertical clip only.</p>
+<h3 id="6-overlays-and-safe-zones-1-minute">6. Overlays and safe zones (1 minute)</h3>
+<p>Open <strong>Project Settings &gt; Plugins &gt; Vertical Clip Camera &gt; Overlays</strong>. You can also call <strong>Set Overlays</strong> or <strong>Set Text Plate Text</strong> on the Clip Camera Subsystem at runtime.</p>
+<ul>
+<li><strong>Logo</strong> and <strong>Watermark</strong>: any texture with alpha, placed in normalized frame coordinates. For crisp results, use "UserInterface2D" compression and no mips.</li>
+<li><strong>Text Plate</strong>: a rounded plate with text, for example "Wishlist on Steam" or your game title. You can set the font, size, colours, shadow, outline and padding. The default font is the engine's Roboto.</li>
+<li><strong>Safe Zone</strong>: TikTok, YouTube Shorts, Instagram Reels or custom margins. The guide shows in the preview. <strong>Keep Overlays Inside</strong> (on by default) moves the logo, watermark, text plate and captions of the 9:16 clip inside the safe zone, so the app's buttons never cover them. Turn on <strong>Burn Into Video</strong> only for review renders.</li>
+<li><strong>Preview</strong>: <strong>Preview Thirds Grid</strong> adds a rule-of-thirds guide; <strong>Preview Show Camera Name</strong> shows the recording camera under the preview.</li>
+</ul>
+<h3 id="7-auto-director">7. Auto director</h3>
+<p>Place two or more Vertical Clip Cameras, for example a close follow, a wide tripod and an orbit. Then turn on <strong>Director &gt; Enable Director</strong>, call <strong>Set Director Enabled</strong>, or run <code>ClipCam.Director 1</code>. The director then works like this:</p>
+<ul>
+<li>It cuts between the cameras that have <strong>Include In Director</strong>, after a random shot length between <strong>Min Shot Seconds</strong> and <strong>Max Shot Seconds</strong>.</li>
+<li>It picks the next camera at random, weighted by <strong>Director Weight</strong>, or in turn (<strong>Director Mode</strong>).</li>
+<li>On highlights it cuts to a camera marked <strong>Highlight Camera</strong> (<strong>Cut On Highlights</strong>).</li>
+<li>A dedicated camera starts rendering <strong>Director Warmup Seconds</strong> before the cut, so auto exposure and anti-aliasing have settled when the shot begins.</li>
+</ul>
+<p><strong>On Camera Cut</strong> fires on every change.</p>
+<h3 id="8-second-format-file-names-and-metadata">8. Second format, file names and metadata</h3>
+<ul>
+<li><strong>Record Second Format</strong> + <strong>Second Format</strong>: also record 16:9 (<code>Landscape Resolution</code>), 1:1 or 4:5 of the HUD-free main view. Every save then writes <code>_16x9.mp4</code>, <code>_1x1.mp4</code> or <code>_4x5.mp4</code> next to the vertical clip, cut at the same moment.</li>
+<li><strong>File Name Template</strong>: tokens <code>{Prefix} {Project} {Map} {Date} {Time} {Camera} {Event} {Seconds} {Counter}</code>. A <code>/</code> makes sub-folders, for example <code>{Date}/{Map}_{Time}</code>. Names are made unique automatically.</li>
+<li><strong>Write Metadata</strong>: a JSON file next to each clip. It holds the duration, size, speed, camera, map, project version, encoder and every gameplay event inside the clip, with its time in the clip. For reels it lists every moment and where it starts.</li>
+</ul>
+<h3 id="9-blueprint-and-c-api">9. Blueprint and C++ API</h3>
+<p>The <strong>Clip Camera Subsystem</strong> (Game Instance subsystem) provides:</p>
+<ul>
+<li><strong>Recording</strong>: Save Clip, Save Clip With Options, Save Slow Motion Clip, Start / Stop Manual Clip, Take Screenshot, Mark Highlight, Save Highlight Reel, Clear Highlight Reel.</li>
+<li><strong>Cameras</strong>: Set Active Camera, Get Cameras, Set Director Enabled, Cut To Next Camera.</li>
+<li><strong>Overlays</strong>: Set Overlays, Set Text Plate Text, Show Caption, Hide Caption, Show Toast.</li>
+<li><strong>Status</strong>: Start Recording, Stop Recording, Is Recording, Get Stats (encoder, buffered seconds, dropped frames, manual clip and highlight counters).</li>
+<li><strong>Events</strong>:</li>
+<li>On Clip Saved (Path, Result), with the thumbnail and metadata paths;</li>
+<li>On Clip Save Failed;</li>
+<li>On Recording State Changed;</li>
+<li>On Manual Clip State Changed;</li>
+<li>On Screenshot Saved;</li>
+<li>On Highlight Kept;</li>
+<li>On Camera Cut.</li>
+</ul>
+<p>Latent nodes: <strong>Save Vertical Clip (Async)</strong>, <strong>Save Vertical Clip With Options (Async)</strong> and <strong>Save Highlight Reel (Async)</strong>, each with <strong>On Saved (Result)</strong> and <strong>On Failed (Result)</strong>.</p>
+<p>The <strong>Vertical Clip Camera Library</strong> offers the same calls as static nodes, plus safe-zone helpers and Steam Timeline functions.</p>
+<p>In C++, call <code>UClipCameraSubsystem::Get(WorldContext)-&gt;SaveClipWithCallback(Seconds, [](const FClipCamSaveResult&amp; Result) { ... });</code>.</p>
+<h3 id="10-steam-timeline-optional">10. Steam Timeline (optional)</h3>
+<p>The plugin has no build or link dependency on Steamworks. If your game initialises Steam on SDK 1.61 or newer (for example with OnlineSubsystemSteam or your own Steamworks integration):</p>
+<ul>
+<li><strong>Notify Gameplay Event</strong> and <strong>Mark Highlight</strong> add Timeline markers.</li>
+<li>Saved clips add a "Clip saved" marker.</li>
+<li><strong>Set Steam Timeline Game Mode</strong> colours the timeline.</li>
+</ul>
+<p>Without Steam, these calls do nothing.</p>
+<h3 id="11-performance-and-memory">11. Performance and memory</h3>
+<ul>
+<li><strong>GPU work</strong>: frames are converted to NV12 on the GPU and read back asynchronously, so the game never waits for the GPU.</li>
+<li><strong>Encoding</strong>: the GPU's H.264 encoder (NVENC, AMF or Quick Sync) through Media Foundation, with the Microsoft software encoder as fallback.</li>
+<li><strong>Buffer</strong>: it stores encoded GOPs of about 1 s each. At 12 Mbit/s a 30 s buffer uses about 45 MB.</li>
+<li><strong>Saving</strong>: clips, slow motion and reels only copy encoded packets into an MP4 file (no re-encoding). A save finishes in well under a second.</li>
+<li><strong>Screenshots and thumbnails</strong>: one extra readback; they are encoded on a worker thread.</li>
+<li><strong>Main View Crop</strong> adds only a crop, a colour conversion and a readback (designed for under 5% FPS cost).</li>
+<li><strong>Dedicated Camera</strong> renders the scene a second time; its cost depends on your scene. Use <strong>Capture Resolution Scale</strong> and lower post-process settings on the capture if needed. The director's warm-up renders the next dedicated camera too, for <strong>Director Warmup Seconds</strong> per cut.</li>
+<li><strong>HDR</strong>: HDR output is not supported for Main View Crop, because it would record the HDR-encoded image. Use a Dedicated Camera or SDR output while recording.</li>
+</ul>
+<h3 id="12-clip-gallery">12. Clip Gallery</h3>
+<p><strong>Tools &gt; Vertical Clip Camera &gt; Clip Gallery</strong> shows the clips, reels, slow-motion clips and screenshots in the output folder, newest first, with thumbnails. It refreshes by itself. Each item has three buttons:</p>
+<ul>
+<li><strong>Open</strong> (or double-click the thumbnail) plays the clip;</li>
+<li><strong>Folder</strong> shows it in Explorer;</li>
+<li><strong>Bin</strong> moves the clip and its second-format file, thumbnail and metadata to the Recycle Bin.</li>
+</ul>
+<p>The toolbar has the PIE actions: save, slow motion, manual clip, screenshot and highlight reel.</p>
+<h3 id="13-demo-map">13. Demo map</h3>
+<p>The plugin contains the demo map <code>/VerticalClipCamera/Demo/Maps/L_VerticalClipCameraDemo</code> (turn on <strong>Show Plugin Content</strong> in the Content Browser). It brings its own game mode (World Settings): a player robot you drive with WASD, the mouse and Space to jump (it runs on autopilot when you let go) and a demo HUD. Your own maps are not affected.</p>
+<ul>
+<li>A runner moves in a figure-eight. Every 30 s it reports a highlight with a title ("Nice jump!", "Combo x3"). The demo turns highlight captions on, so this shows a caption, a punch-in, an automatic clip and a reel moment.</li>
+<li>The auto director cuts between four cameras: tripod, follow target, follow player and main view crop.</li>
+<li>The logo, the text plate and the TikTok safe zone guide are shown in the preview.</li>
+</ul>
+<p>On-screen text in the demo is HUD, so it does not appear in the clips.</p>
+<h3 id="troubleshooting">Troubleshooting</h3>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"Instant replay not started: Windows Media Foundation is not available"</td>
+<td>Install the Media Feature Pack (Windows N/KN editions).</td>
+</tr>
+<tr>
+<td>The clip is black or the camera shows nothing</td>
+<td>Check that a Vertical Clip Camera is registered (Output Log, category <code>LogVerticalClipCamera</code>). The level needs a pawn for Follow Player.</td>
+</tr>
+<tr>
+<td>"dropped N" in the preview status</td>
+<td>The encoder can't keep up. Lower the frame rate or resolution, or check that the hardware encoder is used (<code>ClipCam.Stats</code>).</td>
+</tr>
+<tr>
+<td>Colours look wrong in Main View Crop</td>
+<td>HDR output is on. See section 11.</td>
+</tr>
+<tr>
+<td>"Highlight reel not saved: there are no highlight moments yet"</td>
+<td>Mark a highlight (Ctrl+F6) or report an event with a Highlight Tag while recording. Wait for the post-roll before saving the reel.</td>
+</tr>
+<tr>
+<td>A caption appears that you don't want</td>
+<td>Untick <strong>Overlays &gt; Captions &gt; Enabled</strong> (or <strong>Caption Highlight Events</strong>), or call <strong>Set Captions Enabled (false)</strong>.</td>
+</tr>
+<tr>
+<td>A hotkey clashes with your game's keys</td>
+<td>Rebind or clear it in <strong>Project Settings &gt; Hotkeys</strong>, or per player with <strong>Set Clip Cam Hotkey</strong>.</td>
+</tr>
+<tr>
+<td>A camera pops in exposure right after a cut</td>
+<td>Raise <strong>Director Warmup Seconds</strong>, or use manual exposure on the capture's post-process settings. Highlight cuts happen at once and have no warm-up.</td>
+</tr>
+<tr>
+<td>Font or logo missing in a packaged game</td>
+<td>Make sure the assets are cooked: reference them from a map or add their folder to <em>Additional Asset Directories to Cook</em>.</td>
+</tr>
+</tbody>
+</table>
+<p>Support: see the links on the Fab product page.</p>
+<h2 id="quick-start-unity">Quick start (Unity)</h2>
+<p>Vertical Clip Camera records a HUD-free 1080x1920 (9:16) view of your game into an instant-replay buffer. With one key or one line of code you get an MP4 for TikTok, YouTube Shorts or Instagram Reels:</p>
+<ul>
+<li>the last 30 seconds, or a manual clip of any length;</li>
+<li>a slow-motion clip;</li>
+<li>a highlight reel of the session.</li>
+</ul>
+<p>It frames your player automatically. It also takes 9:16 screenshots, pops up animated captions, cuts between several cameras by itself and can record a second format (16:9, 1:1 or 4:5) at the same time.</p>
+<p><strong>Requirements</strong></p>
+<ul>
+<li>Unity 6 (6000.0 or newer).</li>
+<li>Windows 10/11 64-bit. The H.264 and AAC encoders come with Windows (Media Foundation). On Windows "N" editions, install the Media Feature Pack. Previews and screenshots also work on other platforms.</li>
+<li>Built-in render pipeline or URP. The Dedicated Camera mode only needs a camera, so it works in any pipeline. Main View Crop and the second format need the built-in pipeline or URP.</li>
+</ul>
+<hr />
+<h3 id="1-record-your-first-clip-2-minutes">1. Record your first clip (2 minutes)</h3>
+<ol>
+<li>Open <strong>Window &gt; Package Manager &gt; + &gt; Add package from disk</strong> and pick <code>com.alicemedia.clipcamera/package.json</code>.</li>
+<li>Tag your player object <strong>Player</strong>. The tag can be changed in the settings.</li>
+<li>Press <strong>Play</strong>. Recording starts automatically. If the scene has no Vertical Clip Camera, one is created that follows the player.</li>
+<li>Play for a few seconds, then press <strong>Ctrl+F9</strong>. A "Clip saved" toast appears.</li>
+<li>Find the clip in <code>&lt;Project&gt;/VerticalClips/Clip_&lt;date&gt;_&lt;time&gt;_9x16.mp4</code>, with a JPEG thumbnail next to it. You can also use <strong>Tools &gt; Vertical Clip Camera &gt; Open Clips Folder</strong>.</li>
+</ol>
+<p>Press <strong>Ctrl+F10</strong> to show the floating 9:16 preview. The preview, the toasts and the recording indicator are drawn with IMGUI, so they never appear in the clip. Screen-space UI is not recorded either.</p>
+<p>In a built player, clips go to <code>Videos/&lt;Product Name&gt;</code> in the player's user folder. You can change the folder in the settings.</p>
+<h3 id="demo-scene">Demo scene</h3>
+<p><strong>Package Manager &gt; Vertical Clip Camera 9:16 &gt; Samples &gt; Cove Demo (URP) &gt; Import</strong>, then open <code>Scenes/ClipCamera_Cove_Day</code> (or <code>_Night</code>) and press <strong>Play</strong>:</p>
+<ul>
+<li>a hover robot (tagged Player) flies along the pier and the beach, the game camera chases it;</li>
+<li>three Vertical Clip Cameras (follow, tripod, orbit) are cut by the auto director;</li>
+<li>every 12 seconds a highlight pops a caption and goes into the reel.</li>
+</ul>
+<p>Press <strong>Ctrl+F10</strong> for the 9:16 preview, <strong>Ctrl+F9</strong> to save the last 30 seconds, <strong>Ctrl+Shift+F9</strong> for the highlight reel. The demo uses URP materials; the plugin itself also works in the built-in pipeline.</p>
+<h3 id="2-settings">2. Settings</h3>
+<p><strong>Tools &gt; Vertical Clip Camera &gt; Settings</strong> creates <code>Assets/Resources/ClipCameraSettings.asset</code> and selects it. The recorder reads the settings from there; without the asset it uses the defaults. You can also assign a settings asset to a <strong>Clip Camera Recorder</strong> component.</p>
+<p>The asset holds every option:</p>
+<ul>
+<li>buffer length, resolution, frame rate, bitrate and keyframe interval;</li>
+<li>encoder, audio, output folder and file names;</li>
+<li>hotkeys, preview, slow motion, highlights and reel;</li>
+<li>auto director and overlays.</li>
+</ul>
+<h3 id="3-hotkeys">3. Hotkeys</h3>
+<p>The keys are only observed, never consumed, so your game still receives them. Both the Input System and the legacy Input Manager work. These are the defaults; every one of them can be changed.</p>
+<table>
+<thead>
+<tr>
+<th>Hotkey</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ctrl+F9</td>
+<td>Save the last Default Clip Seconds</td>
+</tr>
+<tr>
+<td>Ctrl+F8</td>
+<td>Start a manual clip; press again to save it</td>
+</tr>
+<tr>
+<td>Ctrl+F7</td>
+<td>9:16 screenshot (PNG)</td>
+</tr>
+<tr>
+<td>Ctrl+F6</td>
+<td>Mark a highlight for the reel</td>
+</tr>
+<tr>
+<td>Ctrl+F10</td>
+<td>Show or hide the preview</td>
+</tr>
+<tr>
+<td>Ctrl+Shift+F9</td>
+<td>Save the highlight reel</td>
+</tr>
+<tr>
+<td>Ctrl+Shift+F8</td>
+<td>Save the last seconds in slow motion</td>
+</tr>
+<tr>
+<td>Ctrl+Shift+F10</td>
+<td>Cut to the next camera</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Changing the hotkeys</strong></p>
+<ul>
+<li><strong>For the project:</strong> edit them in the settings asset. Key <strong>None</strong> turns one off; untick <strong>Enable Hotkeys</strong> to turn them all off.</li>
+<li><strong>For each player:</strong> call <code>ClipCamera.Recorder.SetHotkey(action, new ClipCamHotkey(KeyCode.F5, ctrl: true))</code>. The binding is saved in PlayerPrefs.</li>
+<li><code>GetHotkeyText(action)</code> gives "Ctrl+F5" for menus.</li>
+<li><code>ResetHotkeys()</code> goes back to the project's bindings.</li>
+<li><code>SetHotkeysEnabled(false)</code> turns the keys off for this player.</li>
+</ul>
+<p>The same actions are in <strong>Tools &gt; Vertical Clip Camera</strong> during Play mode.</p>
+<h3 id="4-place-and-frame-a-camera-2-minutes">4. Place and frame a camera (2 minutes)</h3>
+<ol>
+<li>Use <strong>Tools &gt; Vertical Clip Camera &gt; Add Vertical Clip Camera</strong>, or add the <strong>Vertical Clip Camera</strong> component to any object. The rig never moves that object, so the component can sit on your character.</li>
+<li>Choose a <strong>Framing Mode</strong>:
+   - <strong>Follow Player</strong>: follows the object with the player tag.
+   - <strong>Point Of Interest</strong>: follows <strong>Point Of Interest</strong>, or <strong>Point Of Interest Position</strong> when it is empty.
+   - <strong>Manual</strong>: the camera takes this object's pose, for example from an animation or Timeline. In Main View Crop mode it uses <strong>Manual Crop Center</strong>.</li>
+<li>Choose a <strong>Source Mode</strong>:</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Source mode</th>
+<th>What it does</th>
+<th>Cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Dedicated Camera</strong> (default)</td>
+<td>A second, HUD-free 9:16 render with its own position and auto-framing. Rig styles: <strong>Follow</strong> (travels with the target), <strong>Tripod</strong> (stands where the object is and pans) and <strong>Orbit</strong> (circles the target). It copies the main camera's settings and post-processing when it is created.</td>
+<td>A second scene render, only in recorded frames. Lower it with <strong>Capture Resolution Scale</strong> (0.67 gives 720x1280, upscaled).</td>
+</tr>
+<tr>
+<td><strong>Main View Crop</strong></td>
+<td>Crops a 9:16 window out of the main camera's image after post-processing and before the UI, and moves the window to keep the target framed.</td>
+<td>Almost free (no second render). It is sharpest at 1440p or 4K.</td>
+</tr>
+</tbody>
+</table>
+<ol start="4">
+<li>Tune the framing:
+   - <strong>Dead Zone</strong>: the target can move freely inside this part of the frame.
+   - <strong>Position Smooth Time</strong> and <strong>Rotation Smooth Time</strong>: how quickly the camera catches up.
+   - <strong>Lead Time</strong> and <strong>Max Lead Distance</strong>: look-ahead along the target's velocity.
+   - <strong>Follow Offset</strong>, <strong>Look At Offset</strong>, <strong>Target Offset</strong> and <strong>Vertical Field Of View</strong>: the shot itself, in meters.
+   - <strong>Teleport Distance</strong>: a jump larger than this cuts instead of flying.
+   - <strong>Do Collision Test</strong>: keeps the camera in front of walls (sphere cast against <strong>Collision Mask</strong>).
+   - <strong>Handheld Shake</strong> and <strong>Handheld Frequency</strong>: an organic handheld wobble (0 is rock steady).
+   - <strong>Camera Label</strong>: the name under the preview and in the <code>{Camera}</code> file name token.</li>
+</ol>
+<p>If several cameras exist, the one with the highest <strong>Priority</strong> records. To change cameras, use any of these:</p>
+<ul>
+<li><code>ClipCamera.SetActiveCamera(camera)</code>;</li>
+<li><code>camera.ActivateForRecording()</code>;</li>
+<li><code>ClipCamera.CutToNextCamera()</code>;</li>
+<li>the director (section 8).</li>
+</ul>
+<p><code>camera.PunchIn(1.25f, 0.9f)</code> zooms in quickly and eases back out, for hits, goals or finishers. It works in both source modes.</p>
+<h3 id="5-saving-from-code">5. Saving from code</h3>
+<pre><code class="language-csharp">using AliceMedia.ClipCamera;
+
+ClipCamera.SaveClip();                       // the last Default Clip Seconds
+ClipCamera.SaveClip(15f, result =&gt; Debug.Log(result.Success ? result.Path : result.Error));
+ClipCamera.SaveSlowMotionClip(6f, 0.5f);     // 60 fps at 0.5 = smooth 30 fps, twice as long, no sound
+ClipCamera.StartManualClip();                // ... later:
+ClipCamera.StopManualClip();                 // everything in between, even beyond the buffer
+ClipCamera.TakeScreenshot();                 // next composed frame as PNG, overlays included
+</code></pre>
+<ul>
+<li><strong>Save Clip With Options</strong> combines length, speed, audio, the second format, a file name suffix and the <code>{Event}</code> token.</li>
+<li><strong>Manual clips</strong> keep everything up to <strong>Max Manual Clip Seconds</strong> (300 s by default). At 12 Mbit/s one minute needs about 90 MB of memory. A "● CLIP 0:12" indicator shows while one records.</li>
+<li><strong>Thumbnails:</strong> every clip gets a JPEG of its last frame (<code>_9x16.jpg</code>, 540 px wide by default).</li>
+<li><strong>Events</strong> on <code>ClipCamera.Recorder</code>:</li>
+<li><code>ClipSaved</code> and <code>ClipSaveFailed</code>;</li>
+<li><code>RecordingStateChanged</code> and <code>ManualClipStateChanged</code>;</li>
+<li><code>ScreenshotSaved</code>, <code>HighlightKept</code> and <code>CameraCut</code>.</li>
+</ul>
+<h3 id="6-highlights-reel-and-captions">6. Highlights, reel and captions</h3>
+<p>Report gameplay moments with <code>ClipCamera.NotifyGameplayEvent(tag, title, description)</code>. Tags listed in <strong>Highlight Tags</strong> (default: <code>Highlight</code>) make a highlight. A highlight does all of this, and each part can be turned off in the settings:</p>
+<ol>
+<li><strong>Automatic clip</strong>: saved after <strong>Auto Clip Post Roll Seconds</strong>. A second highlight before the save makes the clip longer so both are in it.</li>
+<li><strong>Reel moment</strong>: from <strong>Reel Pre Roll Seconds</strong> before the highlight to <strong>Reel Post Roll Seconds</strong> after it.</li>
+<li><strong>Punch-in</strong>: on the recording camera (<strong>Highlight Punch In Zoom</strong>; 1 means off).</li>
+<li><strong>Director cut</strong>: to a camera marked <strong>Highlight Camera</strong>.</li>
+<li><strong>Caption</strong>: only when <strong>Overlays &gt; Captions &gt; Caption Highlight Events</strong> is on. The title pops up in the clip.</li>
+</ol>
+<p><code>ClipCamera.MarkHighlight("Nice jump!")</code> (or Ctrl+F6) keeps a moment for the reel without saving a clip file.</p>
+<p><code>ClipCamera.SaveHighlightReel()</code> (or Ctrl+Shift+F9) joins the newest moments that fit <strong>Max Reel Seconds</strong> (60 s) into one vertical MP4, oldest first:</p>
+<ul>
+<li>the cuts are hard, with no re-encoding, and the sound stays in sync at every cut;</li>
+<li>overlapping highlights become one longer moment;</li>
+<li>moments use memory up to <strong>Reel Memory Megabytes</strong>, and the oldest are dropped beyond that.</li>
+</ul>
+<p><strong>Captions</strong> are optional:</p>
+<ul>
+<li><code>ClipCamera.ShowCaption("COMBO x3")</code> pops up a caption.</li>
+<li><strong>Overlays &gt; Captions &gt; Enabled</strong> is the master switch. <code>ClipCamera.SetCaptionsEnabled(false)</code> does the same at runtime, for example from your settings menu.</li>
+<li>You can style the font, size, upper case, colours, outline, shadow, plate, position and the pop animation.</li>
+</ul>
+<h3 id="7-overlays-and-safe-zones">7. Overlays and safe zones</h3>
+<p>In the settings asset, under <strong>Overlays</strong>, or at runtime with <code>ClipCamera.Recorder.SetOverlays(...)</code> and <code>ClipCamera.SetTextPlateText("Wishlist on Steam")</code>:</p>
+<ul>
+<li><strong>Logo</strong> and <strong>Watermark</strong>: any texture with alpha, placed in normalized frame coordinates (0,0 is the top left).</li>
+<li><strong>Text Plate</strong>: a rounded plate with text, with font, size, colours, shadow, outline and padding. The default font is Unity's built-in LegacyRuntime font.</li>
+<li><strong>Safe Zone</strong>: TikTok, YouTube Shorts, Instagram Reels or custom margins. The guide shows in the preview. <strong>Keep Overlays Inside</strong> (on by default) moves the logo, watermark, text plate and captions of the 9:16 clip inside the safe zone, so the app's buttons never cover them. Turn on <strong>Burn Into Video</strong> only for review renders. <code>ClipCamera.GetSafeZone(preset)</code> gives the rectangle for your own UI layouts.</li>
+</ul>
+<h3 id="8-auto-director">8. Auto director</h3>
+<p>Place two or more Vertical Clip Cameras, for example a close follow, a wide tripod and an orbit. Then turn on <strong>Enable Director</strong> in the settings, or call <code>ClipCamera.SetDirectorEnabled(true)</code>. The director then works like this:</p>
+<ul>
+<li>It cuts between cameras with <strong>Include In Director</strong> after a random shot length between <strong>Min Shot Seconds</strong> and <strong>Max Shot Seconds</strong>.</li>
+<li>It picks the next camera at random, weighted by <strong>Director Weight</strong>, or in turn (<strong>Director Mode</strong>).</li>
+<li>On highlights it cuts to a <strong>Highlight Camera</strong>.</li>
+<li>A dedicated camera starts rendering <strong>Director Warmup Seconds</strong> before the cut, so temporal effects have settled when the shot begins.</li>
+</ul>
+<h3 id="9-second-format-file-names-and-metadata">9. Second format, file names and metadata</h3>
+<ul>
+<li><strong>Record Second Format</strong> + <strong>Second Format</strong>: also records 16:9, 1:1 or 4:5 of the HUD-free main camera view. Every save then writes <code>_16x9.mp4</code>, <code>_1x1.mp4</code> or <code>_4x5.mp4</code> next to the vertical clip, cut at the same moment.</li>
+<li><strong>File Name Template</strong>: tokens <code>{Prefix} {Project} {Map} {Date} {Time} {Camera} {Event} {Seconds} {Counter}</code>. A <code>/</code> makes sub-folders, for example <code>{Date}/{Map}_{Time}</code>. Names are made unique automatically.</li>
+<li><strong>Write Metadata</strong>: a JSON file next to each clip with the same fields as the Unreal version:</li>
+<li>the duration, size, speed, camera, scene, version and encoder;</li>
+<li>every gameplay event inside the clip, with its time in the clip;</li>
+<li>for reels, every moment and where it starts.</li>
+</ul>
+<h3 id="10-performance-and-memory">10. Performance and memory</h3>
+<ul>
+<li><strong>GPU</strong>: frames are composed and converted to NV12 on the GPU, then read back asynchronously, so the game never waits for the GPU.</li>
+<li><strong>Encoding</strong>: the GPU's H.264 encoder (NVENC, AMF or Quick Sync) through Media Foundation, with the Microsoft software encoder as fallback. Encoding runs on a native thread.</li>
+<li><strong>Buffer</strong>: encoded GOPs of about 1 s each. At 12 Mbit/s a 30 s buffer uses about 45 MB.</li>
+<li><strong>Saving</strong>: only copies encoded packets into an MP4, with no re-encoding, on a worker thread.</li>
+<li><strong>Dedicated Camera</strong>: renders the scene a second time, but only in recorded frames. Use <strong>Capture Resolution Scale</strong> if needed.</li>
+</ul>
+<h3 id="troubleshooting">Troubleshooting</h3>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"Windows Media Foundation is not available"</td>
+<td>Install the Media Feature Pack (Windows N/KN editions).</td>
+</tr>
+<tr>
+<td>The clip shows the main camera's view, not the player</td>
+<td>Tag the player object (default tag <strong>Player</strong>) or set <strong>Point Of Interest</strong>.</td>
+</tr>
+<tr>
+<td>"dropped N" under the preview</td>
+<td>The encoder or the GPU can not keep up. Lower the frame rate or resolution, or check the hardware encoder (<code>ClipCamera.GetStats().Encoder</code>).</td>
+</tr>
+<tr>
+<td>Main View Crop records nothing</td>
+<td>It needs the built-in pipeline or URP and a camera tagged MainCamera.</td>
+</tr>
+<tr>
+<td>A hotkey clashes with your game's keys</td>
+<td>Rebind or clear it in the settings, or per player with <code>SetHotkey</code>.</td>
+</tr>
+<tr>
+<td>"Highlight reel not saved: there are no highlight moments yet"</td>
+<td>Mark a highlight (Ctrl+F6) or report an event with a Highlight Tag while recording. Wait for the post-roll before saving the reel.</td>
+</tr>
+</tbody>
+</table>
+<p>Support: see the links on the Asset Store page.</p>
+<h2 id="changelog">Changelog</h2>
+<h3 id="unity-102">Unity 1.0.2</h3>
+<p>Fixed:
+- While the recorder ran, the game's own screen captures failed (<code>ScreenCapture</code>: "Failed to capture screen shot"). The recorder now restores the active render target after its end-of-frame work.</p>
+<h3 id="111">1.1.1</h3>
+<p>Fixed:
+- A game running at exactly the clip frame rate (for example 60 fps with vsync) could record 30 fps clips, depending on when recording started. Frames are now skipped only when they come more than half a frame early.
+- The recorder, toasts, captions, punch-ins and handheld motion follow the engine's frame time. Nothing changes in normal play; with a fixed time step (benchmarks, offline capture) clips are smooth and in step with the game. Audio is not recorded on a fixed time step. On a fixed time step the recorder also waits for the encoder instead of dropping frames.
+- The preview's status line and camera name no longer run off the screen; the encoder is named short (NVENC, AMF, Quick Sync).</p>
+<p>New:
+- Packages for Unreal Engine 5.6, 5.7 and 5.8.
+- <strong>Safe Zone &gt; Keep Overlays Inside</strong> (on by default): the logo, watermark, text plate and captions of the 9:16 clip are moved inside the safe zone, so the app's buttons and captions never cover them.</p>
+<p>Changed:
+- TikTok safe zone: top margin 130 → 210 px, below the Following / For You tabs.</p>
+<h3 id="110">1.1.0</h3>
+<p>New:
+- <strong>Manual clips</strong>: Start / Stop Manual Clip (Ctrl+F8). The buffer keeps everything since the start, so clips can be longer than the replay buffer (Max Manual Clip Seconds). A recording indicator shows over the game.
+- <strong>Slow motion</strong>: Save Slow Motion Clip (Ctrl+Shift+F8) retimes the frames without re-encoding (60 fps at 0.5 plays as smooth 30 fps).
+- <strong>Highlight reel</strong>: highlights (events with a Highlight Tag, Mark Highlight, Ctrl+F6) are kept in memory. Save Highlight Reel (Ctrl+Shift+F9) joins them into one vertical MP4. Overlapping moments merge, and the sound stays in sync at every cut.
+- <strong>Animated captions</strong> (optional): Show Caption pops up text in the vertical clip with outline, shadow and pop / hold / fade animation. Highlight titles as captions are off by default (Caption Highlight Events). A master switch (Enabled, Set Captions Enabled, <code>ClipCam.Captions 0</code>) turns all captions off.
+- <strong>Auto director</strong>: cuts between the level's cameras after random shot lengths (or in turn) and cuts to a Highlight Camera on highlights. The next dedicated camera warms up before the cut.
+- <strong>Camera</strong>: Orbit rig style, handheld shake, Punch In (also automatic on highlights), Camera Label.
+- <strong>Screenshots and thumbnails</strong>: 9:16 PNG screenshots of the composed frame (Ctrl+F7), and a JPEG thumbnail next to every clip.
+- <strong>Second format</strong>: 16:9, 1:1 or 4:5.
+- <strong>Output</strong>: file name templates with tokens and sub-folders, unique names, an optional JSON sidecar with the gameplay events inside the clip.
+- <strong>Feedback</strong>: in-game toasts, editor notifications with Open / Show in Folder, a rule-of-thirds guide and the camera name in the preview.
+- <strong>Editor</strong>: Clip Gallery tab (thumbnails, play, show in folder, move to Recycle Bin, PIE actions). The Tools menu has every recorder action and the director toggle.
+- <strong>Hotkeys</strong>: they work whenever a game runs (also before recording starts). Each one can be changed or cleared in the project settings. Players can rebind them at runtime: Set Clip Cam Hotkey (works with the UMG Input Key Selector), saved per player, plus the <code>ClipCam.Hotkeys</code>, <code>ClipCam.BindHotkey</code> and <code>ClipCam.ResetHotkeys</code> console commands. Editor tooltips and the demo show the current keys.
+- <strong>Console</strong>: new <code>ClipCam.*</code> commands.
+- <strong>Blueprint</strong>: Save Clip With Options, slow motion, manual clip, screenshot, highlight, reel, caption, punch-in and director nodes; async nodes for options and reels; new events.</p>
+<p>Changed:
+- <code>Auto Clip Tags</code> is shown as <strong>Highlight Tags</strong>. Automatic clip files can be turned off (Auto Save Highlight Clips) while highlights still feed the reel, captions and camera.
+- Saves wait briefly for audio still being encoded, so clips no longer end a few frames before their sound.</p>
+<h3 id="100">1.0.0</h3>
+<p>First release: auto-framing 9:16 camera (dedicated capture or main view crop), 30 s instant-replay buffer with hardware H.264 and AAC, MP4 export without re-encoding, optional 16:9 recording, logo, watermark, text plate and safe-zone overlays, preview, hotkeys, gameplay-event auto clips and Steam Timeline markers.</p>
+<h2 id="third-party-content">Third-party content</h2>
+<p>The plugin and the demo project contain no third-party code, assets, fonts, sounds or textures.
+Everything in the package was written or generated by Alice Media. No content was generated with AI tools.</p>
+<h3 id="used-at-runtime-not-redistributed">Used at runtime, not redistributed</h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Where it comes from</th>
+<th>License / terms</th>
+<th>How it is used</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Windows Media Foundation (mfplat.dll, H.264 and AAC encoder MFTs)</td>
+<td>Part of Windows 10/11</td>
+<td>Windows license</td>
+<td>Linked through the Windows SDK import libraries (mfplat.lib, mfuuid.lib, ole32.lib, shell32.lib). Not shipped with the plugin.</td>
+</tr>
+<tr>
+<td>GPU H.264 encoders (NVIDIA NVENC, AMD AMF, Intel Quick Sync)</td>
+<td>GPU drivers</td>
+<td>Driver license</td>
+<td>Reached only through Media Foundation. No vendor SDK is included.</td>
+</tr>
+<tr>
+<td>Steam Timeline API (steam_api64.dll)</td>
+<td>Steamworks SDK, shipped by the game that uses Steam</td>
+<td>Steamworks SDK Access Agreement</td>
+<td>Optional. The plugin never ships, loads or links Steamworks: it only looks up the flat C API in a steam_api64.dll that the game has already loaded.</td>
+</tr>
+<tr>
+<td>Roboto font (default text-plate font)</td>
+<td>The engine's default UI font (<code>Engine/Content/Slate/Fonts/Roboto-*.ttf</code>), via <code>UEngine::GetLargeFont()</code></td>
+<td>Apache License 2.0 (see <code>Engine/Source/ThirdParty/Licenses/ROBOTO_License.txt</code>), distributed with the engine</td>
+<td>Referenced, not copied. Buyers can pick any font they own the rights to.</td>
+</tr>
+<tr>
+<td>Engine basic shapes and materials (<code>/Engine/BasicShapes/*</code>)</td>
+<td>Unreal Engine content</td>
+<td>Unreal Engine EULA</td>
+<td>Referenced by the demo actors and the demo map script. Not copied.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="generated-by-the-package-itself">Generated by the package itself</h3>
+<ul>
+<li><code>Plugins/VerticalClipCamera/Resources/Icon128.png</code>: drawn procedurally by <code>Project/Tools/make_icon.py</code> (Pillow).</li>
+<li>Demo map, meshes, materials and the logo texture (<code>Content/Demo</code>): built by <code>Project/Scripts/build_demo_map.py</code> from procedural Blender meshes (<code>Project/Tools/DemoAssets/make_demo_meshes.py</code>), engine basic shapes and procedural material graphs. The logo is the plugin icon.</li>
+</ul>
+<h3 id="codec-and-format-notes">Codec and format notes</h3>
+<p>H.264 and AAC encoding is done by the encoders that come with Windows. The plugin contains no codec implementation. The MP4 (ISO/IEC 14496-12/14/15) container writer is original code. If you distribute H.264/AAC content commercially, you are responsible for any patent licensing your use case requires, as with any tool that produces H.264/AAC files.</p>
+<h2 id="support">Support</h2>
+<p>Questions, bugs and ideas: <a href="https://github.com/alicemedia-cmyk/alice-media-docs/issues">https://github.com/alicemedia-cmyk/alice-media-docs/issues</a>. Please include your engine version and the Vertical Clip Camera 9:16 version (1.1.1).</p>
+</main>
+<footer>&copy; 2026 Alice Media. Support: <a href="https://github.com/alicemedia-cmyk/alice-media-docs/issues">https://github.com/alicemedia-cmyk/alice-media-docs/issues</a></footer>
+</body></html>
