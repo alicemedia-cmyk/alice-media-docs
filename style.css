@@ -1,0 +1,31 @@
+:root { --bg: #f7f7f5; --fg: #1d1d1f; --muted: #5f6368; --card: #ffffff; --line: #e3e3e0; --accent: #0b6bcb; --code: #f0f0ec; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #141416; --fg: #e8e8ea; --muted: #a0a0a8; --card: #1d1d21; --line: #2c2c32; --accent: #6cb2ff; --code: #24242a; }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+a { color: var(--accent); }
+header { border-bottom: 1px solid var(--line); background: var(--card); }
+header .in, main { max-width: 920px; margin: 0 auto; padding: 16px; }
+header .in { display: flex; gap: 16px; align-items: baseline; flex-wrap: wrap; }
+header .brand { font-weight: 700; text-decoration: none; color: var(--fg); }
+nav.toc { display: flex; gap: 12px; flex-wrap: wrap; font-size: 14px; }
+h1 { font-size: 30px; line-height: 1.2; margin: 24px 0 8px; }
+h2 { font-size: 22px; margin: 36px 0 8px; padding-top: 8px; border-top: 1px solid var(--line); }
+h3 { font-size: 18px; margin: 24px 0 6px; }
+.lead { color: var(--muted); font-size: 18px; }
+.links { display: flex; gap: 10px; flex-wrap: wrap; margin: 16px 0; }
+.links a { padding: 6px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--card); text-decoration: none; }
+img.cover { width: 100%; height: auto; border-radius: 10px; border: 1px solid var(--line); }
+code { background: var(--code); padding: 1px 5px; border-radius: 4px; font-size: 14px; }
+pre { background: var(--code); padding: 12px; border-radius: 8px; overflow-x: auto; }
+pre code { padding: 0; }
+table { border-collapse: collapse; width: 100%; display: block; overflow-x: auto; font-size: 15px; }
+th, td { border: 1px solid var(--line); padding: 6px 10px; text-align: left; vertical-align: top; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; margin-top: 20px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; text-decoration: none; color: var(--fg); }
+.card img { width: 100%; height: auto; display: block; }
+.card div { padding: 10px 12px; }
+.card b { display: block; }
+.card span { color: var(--muted); font-size: 14px; }
+footer { max-width: 920px; margin: 40px auto; padding: 16px; color: var(--muted); font-size: 14px; border-top: 1px solid var(--line); }
